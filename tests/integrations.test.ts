@@ -3,7 +3,7 @@ import { afterEach, beforeEach, test } from 'node:test';
 import { createTestPayout, getStripeDestinations, getStripeStatus, retrieveTestPayout, StripeIntegrationError } from '../server/stripe.js';
 import { getCogneeStatus, searchCognee, seedCognee } from '../server/cognee.js';
 
-const names = ['STRIPE_SECRET_KEY', 'STRIPE_PAYOUT_DESTINATION', 'COGNEE_API_KEY', 'COGNEE_BASE_URL', 'COGNEE_DATASET_NAME'] as const;
+const names = ['STRIPE_SECRET_KEY', 'STRIPE_PAYOUT_DESTINATION', 'COGNEE_API_KEY', 'COGNEE_BASE_URL', 'COGNEE_DATASET_NAME', 'COGNEE_TENANT_ID'] as const;
 let saved: Record<string, string | undefined>;
 let originalFetch: typeof fetch;
 let calls: { url: string; init?: RequestInit }[];
@@ -58,7 +58,7 @@ test('a non-test balance prevents payouts and destination discovery', async () =
   assert.ok(calls.every(call => call.init?.method === 'GET'));
 });
 test('own-bank discovery strips account/routing numbers and rejects foreign banks', async () => {
-  overrides['/v1/account'] = () => Response.json({ id: 'acct_mock', external_accounts: { data: [bank, { ...bank, id: 'ba_other', account: 'acct_other' }], has_more: true } });
+  overrides['/v1/account'] = () => Response.json({ id: 'acct_mock', payouts_enabled: true, external_accounts: { data: [bank, { ...bank, id: 'ba_other', account: 'acct_other' }], has_more: true } });
   const result = await getStripeDestinations();
   assert.equal(result.hasMore, true); assert.equal(result.destinations.length, 1); assert.equal(result.destinations[0].last4, '1234');
   assert.equal(JSON.stringify(result).includes('never-return-this'), false);
@@ -66,17 +66,22 @@ test('own-bank discovery strips account/routing numbers and rejects foreign bank
 test('allowlist, bank ownership, bank currency and payout eligibility fail closed', async () => {
   await assert.rejects(createTestPayout({ ...funding, destination: 'ba_other' }), /configured business/);
   for (const unsafeBank of [{ ...bank, account: 'acct_other' }, { ...bank, currency: 'usd' }, { ...bank, status: 'errored' }]) {
-    overrides['/v1/account'] = () => Response.json({ id: 'acct_mock', external_accounts: { data: [unsafeBank] } });
+    overrides['/v1/account'] = () => Response.json({ id: 'acct_mock', payouts_enabled: true, external_accounts: { data: [unsafeBank] } });
     await assert.rejects(createTestPayout(funding), /usable GBP/);
   }
   overrides['/v1/account'] = () => Response.json({ id: 'acct_mock', payouts_enabled: false, external_accounts: { data: [bank] } });
-  await assert.rejects(createTestPayout(funding), /Payouts are disabled/);
+  await assert.rejects(createTestPayout(funding), /Payouts are not enabled/);
   assert.ok(calls.every(call => call.init?.method === 'GET'));
 });
 test('pending funds cannot cover payout and split sources cannot be implicitly combined', async () => {
   await assert.rejects(createTestPayout({ ...funding, amountPence: 3000 }), /Insufficient available/);
   overrides['/v1/balance'] = () => Response.json({ livemode: false, available: [{ currency: 'gbp', amount: 2000, source_types: { card: 600, bank_account: 1400 } }] });
   await assert.rejects(createTestPayout({ ...funding, amountPence: 1800 }), /No single/);
+});
+test('the latest provider balance must preserve the configured reserve immediately before submission', async () => {
+  await assert.rejects(createTestPayout({...funding,minimumReservePence:1001}),/preserving the required reserve/);
+  assert.ok(calls.every(call=>call.init?.method==='GET'));
+  assert.equal((await createTestPayout({...funding,minimumReservePence:1000})).status,'pending');
 });
 test('payout posts stable idempotency, exact GBP amount and own bank; pending is not paid', async () => {
   assert.equal((await getStripeStatus()).status.connected, true);
@@ -113,4 +118,37 @@ test('Cognee uploads source documents then requests scoped background processing
   assert.deepEqual(JSON.parse(String(calls[1].init?.body)), { datasets: ['briefcase_demo'], run_in_background: true });
   overrides['/api/v1/add'] = () => Response.json({ status: 'failed' });
   await assert.rejects(seedCognee([{ id: 'contract1', text: '2% discount' }]), /failed ingestion/);
+});
+
+test('Cognee distinguishes TLS and DNS failures from timeout and sends optional tenant header', async () => {
+  process.env.COGNEE_TENANT_ID = 'tenant-test';
+  await searchCognee('discount');
+  assert.equal((calls[0].init?.headers as Record<string, string>)['X-Tenant-Id'], 'tenant-test');
+  for (const [code, expected] of [['ERR_SSL_TLSV1_ALERT_INTERNAL_ERROR', /secure connection failed/], ['ENOTFOUND', /hostname could not be resolved/]] as const) {
+    overrides['/health'] = () => { throw Object.assign(new TypeError('secret must not be displayed'), { cause: { code } }); };
+    const status = await getCogneeStatus();
+    assert.equal(status.connected, false); assert.match(status.message, expected); assert.ok(!status.message.includes('secret'));
+  }
+});
+
+test('standalone account without external_accounts can fund only an explicit bank with payouts enabled', async () => {
+  overrides['/v1/account'] = () => Response.json({ id: 'acct_mock', payouts_enabled: true });
+  const ready = await getStripeStatus();
+  assert.equal(ready.status.connected, true);
+  assert.match(ready.status.message, /validated by Stripe when/);
+  assert.equal((await createTestPayout(funding)).destination, 'ba_mock');
+  const posted = calls.find(call => call.init?.method === 'POST')!;
+  assert.equal(new URLSearchParams(String(posted.init?.body)).get('destination'), 'ba_mock');
+  assert.equal((posted.init?.headers as Record<string, string>)['Stripe-Account'], undefined);
+  assert.ok(calls.every(call => !call.url.includes('/external_accounts')));
+  delete process.env.STRIPE_PAYOUT_DESTINATION;
+  await assert.rejects(createTestPayout(funding), /STRIPE_PAYOUT_DESTINATION/);
+  process.env.STRIPE_PAYOUT_DESTINATION = 'ba_mock';
+  overrides['/v1/account'] = () => Response.json({ id: 'acct_mock' });
+  await assert.rejects(createTestPayout(funding), /Payouts are not enabled/);
+});
+test('standalone Stripe destination rejection is a confirmed failure, never fake success', async () => {
+  overrides['/v1/account'] = () => Response.json({ id: 'acct_mock', payouts_enabled: true });
+  overrides['/v1/payouts'] = () => Response.json({ error: { code: 'resource_missing' } }, { status: 400 });
+  await assert.rejects(createTestPayout(funding), error => error instanceof StripeIntegrationError && !error.uncertain);
 });

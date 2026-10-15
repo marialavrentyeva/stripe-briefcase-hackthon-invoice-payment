@@ -5,17 +5,27 @@ type Json = Record<string, any>;
 function config() {
   const apiKey = process.env.COGNEE_API_KEY?.trim();
   if (!apiKey) throw new Error('Set COGNEE_API_KEY locally to connect Cognee Cloud.');
-  const base = new URL(process.env.COGNEE_BASE_URL || 'https://api.cognee.ai');
+  const configuredBase = process.env.COGNEE_BASE_URL?.trim();
+  if (!configuredBase) throw new Error('Set COGNEE_BASE_URL to the tenant API Base URL from Cognee Cloud → API Keys → Connection Details.');
+  const base = new URL(configuredBase);
   if (base.protocol !== 'https:' || base.username || base.password || base.search || base.hash) throw new Error('COGNEE_BASE_URL must be an HTTPS service URL without embedded credentials.');
   const datasetName = process.env.COGNEE_DATASET_NAME?.trim() || 'briefcase_demo';
-  return { apiKey, baseUrl: base.toString().replace(/\/$/, ''), datasetName };
+  return { apiKey, baseUrl: base.toString().replace(/\/$/, ''), datasetName, tenantId: process.env.COGNEE_TENANT_ID?.trim() };
 }
 async function request(path: string, options: { method?: string; json?: unknown; form?: FormData; timeout?: number } = {}): Promise<unknown> {
-  const { apiKey, baseUrl } = config();
+  const { apiKey, baseUrl, tenantId } = config();
   let response: Response;
   try {
-    response = await fetch(`${baseUrl}${path}`, { method: options.method || 'GET', redirect: 'error', signal: AbortSignal.timeout(options.timeout || 15_000), headers: { 'X-Api-Key': apiKey, ...(options.json ? { 'Content-Type': 'application/json' } : {}) }, body: options.form || (options.json ? JSON.stringify(options.json) : undefined) });
-  } catch { throw new Error('Cognee did not respond in time. A submitted ingestion job may still be running; check the Cloud dashboard before reseeding.'); }
+    response = await fetch(`${baseUrl}${path}`, { method: options.method || 'GET', redirect: 'error', signal: AbortSignal.timeout(options.timeout || 15_000), headers: { 'X-Api-Key': apiKey, ...(tenantId ? { 'X-Tenant-Id': tenantId } : {}), ...(options.json ? { 'Content-Type': 'application/json' } : {}) }, body: options.form || (options.json ? JSON.stringify(options.json) : undefined) });
+  } catch (error) {
+    const failure = error as { name?: string; cause?: { code?: string } };
+    const code = failure.cause?.code;
+    const writeHint = options.form || path === '/api/v1/cognify' ? ' A submitted ingestion job may still be running; check Cloud before reseeding.' : '';
+    if (failure.name === 'TimeoutError' || failure.name === 'AbortError' || code === 'UND_ERR_CONNECT_TIMEOUT') throw new Error(`Cognee request timed out. Open the Cloud workspace if it is sleeping, then retry.${writeHint}`);
+    if (code && /SSL|TLS|CERT/.test(code)) throw new Error('Cognee secure connection failed before an API response. Check the tenant API Base URL in Cloud → API Keys → Connection Details; the shared api.cognee.ai hostname may not serve your workspace.');
+    if (code === 'ENOTFOUND' || code === 'EAI_AGAIN') throw new Error('Cognee hostname could not be resolved. Check COGNEE_BASE_URL against your tenant Connection Details and check network connectivity.');
+    throw new Error(`Cognee network connection failed. Check the tenant API Base URL and connectivity.${writeHint}`);
+  }
   if (!response.ok) throw new Error(`Cognee returned HTTP ${response.status}. Check the API key, dataset access and Cloud service status.`);
   try { return await response.json(); } catch { throw new Error('Cognee returned an unreadable response.'); }
 }

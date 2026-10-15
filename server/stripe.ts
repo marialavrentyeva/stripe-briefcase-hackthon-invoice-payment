@@ -59,30 +59,32 @@ function usableBank(bank: Json, accountId: string) {
 async function verifyDestination(requested?: string) {
   const destination = destinationId(requested);
   const account = await ownAccount();
-  // External-account management endpoints are documented for Connect. For an own-account
-  // payout, use only banks exposed by the authenticated account itself; never guess ownership.
-  const banks: Json[] = Array.isArray(account.external_accounts?.data) ? account.external_accounts.data : [];
-  const bank = banks.find(item => item.id === destination);
-  if (!bank) throw new StripeIntegrationError('Stripe did not expose the configured bank on your own account. Check the sandbox bank ID and account read permissions in Stripe; funding is blocked until ownership can be verified.');
+  if (account.payouts_enabled !== true) throw new StripeIntegrationError('Payouts are not enabled on this Stripe account. Complete sandbox account setup in Stripe.');
+  // Stripe omits external_accounts on standalone accounts where this key is not a
+  // Connect controller. The account-scoped Payouts API validates an explicit bank ID
+  // on submission; never substitute a default destination or use a Connect header.
+  if (account.external_accounts === undefined) return { destination, bankVerified: false };
+  if (!Array.isArray(account.external_accounts?.data)) throw new StripeIntegrationError('Stripe returned an unreadable bank-account list. Funding is blocked.');
+  const bank = (account.external_accounts.data as Json[]).find(item => item.id === destination);
+  if (!bank) throw new StripeIntegrationError('The configured bank was not found in the bank accounts exposed by Stripe. Check the allowlisted sandbox bank ID.');
   if (!usableBank(bank, account.id)) throw new StripeIntegrationError('The configured destination is not a usable GBP bank account on this Stripe account.');
-  if (account.payouts_enabled === false) throw new StripeIntegrationError('Payouts are disabled on this Stripe account. Complete sandbox account setup in Stripe.');
-  return destination;
+  return { destination, bankVerified: true };
 }
 async function verifiedContext(requested?: string) {
   const balance = await readTestBalance();
-  const destination = await verifyDestination(requested);
-  return { ...balance, destination };
+  const bank = await verifyDestination(requested);
+  return { ...balance, ...bank };
 }
 export type StripeDestination = { id: string; bankName?: string; last4?: string; currency: string; defaultForCurrency: boolean; usable: boolean };
 export async function getStripeDestinations(): Promise<{ accountId: string; destinations: StripeDestination[]; hasMore: boolean }> {
   await readTestBalance();
   const account = await ownAccount();
-  if (!Array.isArray(account.external_accounts?.data)) throw new StripeIntegrationError('Stripe did not expose bank accounts for this key. View your own sandbox bank account in the Stripe dashboard and check account read permissions.');
+  if (!Array.isArray(account.external_accounts?.data)) throw new StripeIntegrationError('Stripe does not expose bank-account lists for this standalone account. Copy your own sandbox bank ID from the Stripe dashboard into STRIPE_PAYOUT_DESTINATION; Stripe validates it when a payout is submitted.');
   return {
     accountId: account.id,
     hasMore: account.external_accounts.has_more === true,
     destinations: account.external_accounts.data.filter((bank: Json) => bank.object === 'bank_account' && typeof bank.id === 'string' && /^ba_[A-Za-z0-9]+$/.test(bank.id) && (!bank.account || bank.account === account.id)).map((bank: Json) => ({
-      id: bank.id, ...(typeof bank.bank_name === 'string' ? { bankName: bank.bank_name } : {}), ...(typeof bank.last4 === 'string' ? { last4: bank.last4 } : {}), currency: typeof bank.currency === 'string' ? bank.currency : 'unknown', defaultForCurrency: bank.default_for_currency === true, usable: usableBank(bank, account.id) && account.payouts_enabled !== false,
+      id: bank.id, ...(typeof bank.bank_name === 'string' ? { bankName: bank.bank_name } : {}), ...(typeof bank.last4 === 'string' ? { last4: bank.last4 } : {}), currency: typeof bank.currency === 'string' ? bank.currency : 'unknown', defaultForCurrency: bank.default_for_currency === true, usable: usableBank(bank, account.id) && account.payouts_enabled === true,
     })),
   };
 }
@@ -91,8 +93,9 @@ export async function getStripeStatus(): Promise<{ status: IntegrationStatus; ba
   let balancePence = 0;
   try {
     balancePence = (await readTestBalance()).balancePence;
-    const destination = await verifyDestination();
-    return { status: { configured: true, connected: true, mode: 'test', message: 'Stripe sandbox connected; own GBP bank destination verified. No real money moves.' }, balancePence, destination };
+    const { destination, bankVerified } = await verifyDestination();
+    const message = bankVerified ? 'Stripe sandbox connected; own GBP bank destination verified. No real money moves.' : 'Stripe test balance connected; the configured bank is validated by Stripe when the payout is submitted. No real money moves.';
+    return { status: { configured: true, connected: true, mode: 'test', message }, balancePence, destination };
   } catch (error) {
     return { status: { configured, connected: false, mode: 'test', message: error instanceof StripeIntegrationError ? error.message : 'Stripe configuration could not be verified.' }, balancePence };
   }
@@ -105,12 +108,14 @@ function normalizePayout(data: Json, uncertain: boolean): PayoutResult {
   const status = data.status === 'paid' ? 'paid' : ['failed', 'canceled'].includes(data.status) ? 'failed' : ['pending', 'in_transit'].includes(data.status) ? 'pending' : 'unknown';
   return { stripePayoutId: data.id, status, amountPence: data.amount, currency: data.currency, destination, ...(Number.isFinite(data.arrival_date) && data.arrival_date > 0 && data.arrival_date < 253402300800 ? { arrivalDate: new Date(data.arrival_date * 1000).toISOString().slice(0, 10) } : {}), ...(status === 'failed' ? { error: 'Stripe reports this payout failed or was canceled. Check the sandbox dashboard.' } : {}) };
 }
-export async function createTestPayout(input: { amountPence: number; idempotencyKey: string; runId: string; destination?: string; invoiceIds: string[] }): Promise<PayoutResult> {
+export async function createTestPayout(input: { amountPence: number; idempotencyKey: string; runId: string; destination?: string; invoiceIds: string[]; minimumReservePence?: number }): Promise<PayoutResult> {
   if (!Number.isSafeInteger(input.amountPence) || input.amountPence <= 0) throw new StripeIntegrationError('Payout amount must be a positive whole number of pence.');
   if (!/^[A-Za-z0-9_:-]{1,255}$/.test(input.idempotencyKey)) throw new StripeIntegrationError('A stable valid idempotency key is required.');
   if (!input.runId || input.runId.length > 500 || !input.invoiceIds.length || input.invoiceIds.join(',').length > 500) throw new StripeIntegrationError('A run ID and bounded invoice references are required.');
   const context = await verifiedContext(input.destination);
   if (context.balancePence < input.amountPence) throw new StripeIntegrationError('Insufficient available GBP Stripe balance. Pending balance cannot fund this payout.');
+  const reserve=input.minimumReservePence ?? 0;
+  if(!Number.isSafeInteger(reserve)||reserve<0||context.balancePence-input.amountPence<reserve) throw new StripeIntegrationError('The latest Stripe balance cannot cover this payout while preserving the required reserve.');
   const body = new URLSearchParams({ amount: String(input.amountPence), currency: 'gbp', destination: context.destination, method: 'standard', description: 'Briefcase: fund own business payments account', 'metadata[run_id]': input.runId, 'metadata[invoice_ids]': input.invoiceIds.join(',') });
   const sources = Object.entries(context.sources);
   if (sources.length) {

@@ -23,9 +23,35 @@ app.use('/api', (req,res,next) => {
   next();
 });
 const route = (fn:(req:Request,res:Response)=>Promise<unknown>) => (req:Request,res:Response,next:NextFunction) => { Promise.resolve(fn(req,res)).catch(next); };
-const publicState = (s:StoredState):AppState => { const {runHistory,memorySyncPending,...state} = s; return state; };
+const publicState = (s:StoredState):AppState => { const {runHistory,memorySyncPending,memoryOutbox,...state} = s; return state; };
+function policyDocument(s:StoredState) {
+  const policy=fs.existsSync('docs/POLICY.md')?fs.readFileSync('docs/POLICY.md','utf8'):'Briefcase policy v1';
+  return {id:s.policyVersion,text:`Policy version ${s.policyVersion}\nEffective settings recorded at ${new Date().toISOString()}\n${policy}\nActual settings: ${JSON.stringify(s.settings)}`};
+}
+function queueMemory(s:StoredState,doc:{id:string;text:string}) {
+  if(!s.memoryOutbox.some(d=>d.id===doc.id)) s.memoryOutbox.push(doc);
+}
+function queueFundingMemory(s:StoredState,attempt:FundingAttempt) {
+  const run=[...s.runHistory,...(s.run?[s.run]:[])].find(r=>r.id===attempt.runId);
+  queueMemory(s,{id:`${attempt.id}-${attempt.status}`,text:`Funding decision and outcome. This is a Stripe test payout to the business's own account, not a supplier payment.\n${JSON.stringify(attempt,null,2)}\nApproved source decisions:\n${JSON.stringify(run?.decisions.filter(d=>attempt.invoiceIds.includes(d.invoiceId))||[],null,2)}`});
+}
+async function syncMemoryOutbox(s:StoredState) {
+  if(!process.env.COGNEE_API_KEY || !s.memoryOutbox.length) return;
+  try {
+    await seedCognee(s.memoryOutbox);
+    s.memoryOutbox=[];
+    s.integrations.cognee.message='Evidence and decision history submitted to Cognee Cloud; indexing may still be processing.';
+  } catch {
+    s.integrations.cognee.message='Decision history is saved locally; Cognee sync is pending. Refresh or seed memory to retry. Funding will not be repeated.';
+  }
+  writeStore(s);
+}
+function scheduleMemorySync() {
+  setTimeout(()=>{ void withLock(async()=>syncMemoryOutbox(readStore())).catch(()=>{}); },0);
+}
 
 async function refreshIntegrations(s:StoredState) {
+  s.policyVersion=policyVersion(s.settings);
   const [stripe,cognee] = await Promise.all([getStripeStatus(),getCogneeStatus()]);
   s.integrations.stripe = stripe.status.configured ? stripe.status : {configured:false,connected:false,mode:'demo',message:'Sample Stripe balance. Configure the sandbox key and own bank destination to request funding.'};
   s.stripeBalancePence = stripe.status.configured ? stripe.balancePence : 1250000;
@@ -45,7 +71,15 @@ async function attachMemory(s:StoredState) {
       // A retrieval without the supplier's actual identity is not corroborating evidence.
       const matches = evidence.filter(e=>e.excerpt.includes(supplier.id) || e.excerpt.toLowerCase().includes(supplier.name.toLowerCase()) || e.excerpt.includes(supplier.contractId));
       if (!matches.length) throw new Error('No matching supplier source was retrieved from Cognee. Seed the demo memory and wait for processing.');
-      decision.evidence.push(...matches);
+      const contracts=matches.filter(e=>e.excerpt.includes(supplier.contractId));
+      const source=contracts.map(e=>e.excerpt).join('\n');
+      const sourceBank=source.match(/Approved bank reference:\s*([^\n]+)/)?.[1]?.trim();
+      const sourceDeadline=source.match(/Payment deadline:\s*(\d{4}-\d{2}-\d{2})/)?.[1];
+      const canonicalDeadline=supplier.contractText.match(/Payment deadline:\s*(\d{4}-\d{2}-\d{2})/)?.[1];
+      if(!sourceBank || sourceBank!==supplier.bankReference || (canonicalDeadline && sourceDeadline!==canonicalDeadline)) throw new Error('Cognee contract terms do not corroborate the approved supplier record. Review the source before paying.');
+      const memoryDispute=source.match(/Open dispute:\s*([^\n]+)/)?.[1]?.trim();
+      if(memoryDispute && !/^None\.?$/i.test(memoryDispute) && !supplier.dispute) throw new Error('Cognee records an open supplier dispute that needs review.');
+      for(const item of matches) if(!decision.evidence.some(e=>e.id===item.id)) decision.evidence.push(item);
       decision.checks.push({label:'Cognee memory',passed:true,detail:`Retrieved ${matches.length} matching source chunks.`});
       s.integrations.cognee = {configured:true,connected:true,mode:'cloud',message:'Supplier evidence retrieved from Cognee Cloud.'};
     } catch (error) {
@@ -84,7 +118,8 @@ app.patch('/api/settings',route(async(req,res)=>withLock(async()=>{
     } else throw new Error(`Unsupported setting: ${key}.`);
   }
   const next={...s.settings,...updates}; if(next.autoApproveLimitPence>next.hardLimitPence) throw new Error('The automatic limit cannot exceed the hard invoice limit.');
-  s.settings=next; invalidate(s); await attachMemory(s); writeStore(s); res.json(publicState(s));
+  if(next.autoApproveLimitPence>100000 || next.hardLimitPence>250000) throw new Error('Demo policy ceilings are £1,000 automatic and £2,500 gross per invoice. Settings may tighten these limits.');
+  s.settings=next; invalidate(s); await attachMemory(s); queueMemory(s,policyDocument(s)); writeStore(s); scheduleMemorySync(); res.json(publicState(s));
 })));
 app.post('/api/approve',route(async(req,res)=>withLock(async()=>{
   const s=readStore(); if(!s.run) throw new Error('Analyse invoices first.');
@@ -131,7 +166,7 @@ app.post('/api/fund',route(async(req,res)=>withLock(async()=>{
   const attempt:FundingAttempt={id:`fund_${randomUUID()}`,runId:s.run.id,amountPence:preview.shortfallPence,currency:'gbp',status:'unknown',createdAt:new Date().toISOString(),idempotencyKey:`briefcase_${randomUUID()}`,invoiceIds:preview.invoiceIds,policyVersion:s.policyVersion,destination:process.env.STRIPE_PAYOUT_DESTINATION,evidence:`F01–F04: £${(preview.requiredPence/100).toFixed(2)} approved obligations requiring funding by ${s.settings.demoDate}, less £${(preview.bankAvailablePence/100).toFixed(2)} simulated payments-account balance and £${(preview.pendingPence/100).toFixed(2)} pending funding. Preserve £${(s.settings.stripeReservePence/100).toFixed(2)} in Stripe. Own approved GBP bank destination only. Supplier invoices remain unpaid.`};
   s.fundingAttempts.push(attempt); s.run.status='funding'; archiveRun(s); writeStore(s);
   try {
-    const result=await createTestPayout({amountPence:attempt.amountPence,idempotencyKey:attempt.idempotencyKey,runId:attempt.runId,destination:attempt.destination,invoiceIds:attempt.invoiceIds});
+    const result=await createTestPayout({amountPence:attempt.amountPence,idempotencyKey:attempt.idempotencyKey,runId:attempt.runId,destination:attempt.destination,invoiceIds:attempt.invoiceIds,minimumReservePence:s.settings.stripeReservePence});
     Object.assign(attempt,result); if(result.status==='paid') s.bankBalancePence+=result.amountPence;
     s.run.status=result.status==='paid'?'funded':result.status==='failed'?'approved':'funding';
     s.stripeBalancePence-=result.status==='failed'?0:result.amountPence;
@@ -140,7 +175,7 @@ app.post('/api/fund',route(async(req,res)=>withLock(async()=>{
     attempt.error=error instanceof Error?error.message:'Funding outcome unknown; reconcile before retrying.';
     if(attempt.status==='failed') s.run.status='approved';
   }
-  writeStore(s); res.json(publicState(s));
+  queueFundingMemory(s,attempt); writeStore(s); scheduleMemorySync(); res.json(publicState(s));
 })));
 app.post('/api/reconcile',route(async(_req,res)=>withLock(async()=>{
   const s=readStore();
@@ -149,15 +184,18 @@ app.post('/api/reconcile',route(async(_req,res)=>withLock(async()=>{
     const result=await retrieveTestPayout(attempt.stripePayoutId);
     if(result.amountPence!==attempt.amountPence) throw new Error('Payout amount mismatch. Manual reconciliation is required.');
     Object.assign(attempt,result); if(result.status==='paid') s.bankBalancePence+=result.amountPence;
+    queueFundingMemory(s,attempt);
   }
-  if(s.run) s.run.status=fundingActive(s)?'funding':fundingPreview(s).shortfallPence===0?'funded':'approved';
-  await refreshIntegrations(s); writeStore(s); res.json(publicState(s));
+  if(s.run) {const preview=fundingPreview(s);s.run.status=!s.run.approvedInvoiceIds.length?'draft':fundingActive(s)?'funding':preview.requiredPence>0&&preview.shortfallPence===0?'funded':'approved';}
+  await refreshIntegrations(s); writeStore(s); scheduleMemorySync(); res.json(publicState(s));
 })));
 app.post('/api/memory/seed',route(async(_req,res)=>withLock(async()=>{
-  const s=readStore(); const policy=fs.existsSync('docs/POLICY.md')?fs.readFileSync('docs/POLICY.md','utf8'):'Briefcase policy v1';
-  const result=await seedCognee([{id:s.policyVersion,text:`Active policy ${s.policyVersion}\n${policy}\nActual current settings: ${JSON.stringify(s.settings)}`},...s.suppliers.map(x=>({id:x.contractId,text:`Supplier ID: ${x.id}\n${x.contractText}\nHistory:\n${x.history.join('\n')}\nOpen dispute: ${x.dispute||'None'}`}))]);
+  const s=readStore(); s.policyVersion=policyVersion(s.settings); writeStore(s);
+  const result=await seedCognee([policyDocument(s),...s.suppliers.map(x=>({id:x.contractId,text:`Supplier ID: ${x.id}\n${x.contractText}\nHistory:\n${x.history.join('\n')}\nOpen dispute: ${x.dispute||'None'}`})),...s.memoryOutbox]);
+  s.memoryOutbox=[];writeStore(s);
   res.json({...result,message:'Sources submitted. Wait for Cognee processing to finish, then analyse the batch again.'});
 })));
+app.post('/api/memory/sync',route(async(_req,res)=>withLock(async()=>{const s=readStore();await syncMemoryOutbox(s);res.json(publicState(s));})));
 app.post('/api/reset',route(async(_req,res)=>withLock(async()=>{
   const old=readStore(); if(old.fundingAttempts.length) throw new Error('Reset is disabled after a funding attempt so the payout ledger cannot be lost.');
   const s=initialState(); await refreshIntegrations(s); writeStore(s); res.json(publicState(s));
@@ -167,4 +205,4 @@ app.use(express.static(path.resolve('dist')));
 app.get('*',(_req,res)=> { const index=path.resolve('dist/index.html'); fs.existsSync(index)?res.sendFile(index):res.status(404).send('Start the Vite dashboard at http://127.0.0.1:5173'); });
 app.use((error:Error,_req:Request,res:Response,_next:NextFunction)=>{res.status(400).json({error:error.message || 'The request could not be completed.'});});
 const port=Number(process.env.PORT||3001);
-app.listen(port,'127.0.0.1',()=>console.log(`Briefcase API: http://127.0.0.1:${port}`));
+app.listen(port,'127.0.0.1',()=>{console.log(`Briefcase API: http://127.0.0.1:${port}`);scheduleMemorySync();});

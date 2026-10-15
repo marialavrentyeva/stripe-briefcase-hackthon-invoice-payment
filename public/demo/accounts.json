@@ -1,0 +1,16 @@
+{
+  "notice": "Synthetic accounting-system fixture. No real bank account details or credentials.",
+  "currency": "GBP",
+  "paymentsAccount": {
+    "id": "SIM-PAYMENTS-ACCOUNT-001",
+    "name": "Operating payments account",
+    "availableBalancePence": 30000,
+    "source": "simulated",
+    "asOf": "2026-10-15"
+  },
+  "stripeAccount": {
+    "name": "Business revenue balance",
+    "unconnectedPreviewBalancePence": 1250000,
+    "source": "sample before connection; actual Stripe sandbox available GBP balance after connection"
+  }
+}

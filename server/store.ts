@@ -7,8 +7,8 @@ import { createHash, randomUUID } from 'node:crypto';
 
 export const DATA_DIR = path.resolve(process.env.DATA_DIR || '.data');
 const storePath = path.join(DATA_DIR, 'state.json');
-export type StoredState = AppState & { runHistory: PaymentRun[]; memorySyncPending?: string[] };
-export const policyVersion = (settings: AppState['settings']) => `v1-${createHash('sha256').update(JSON.stringify(settings)).digest('hex').slice(0, 8)}`;
+export type StoredState = AppState & { runHistory: PaymentRun[]; memoryOutbox: {id:string;text:string}[]; memorySyncPending?: string[] };
+export const policyVersion = (settings: AppState['settings']) => `v1-${createHash('sha256').update(JSON.stringify(settings)).update(fs.existsSync('docs/POLICY.md') ? fs.readFileSync('docs/POLICY.md','utf8') : 'policy-v1').digest('hex').slice(0, 8)}`;
 export function createRun(state: AppState): PaymentRun {
   const decisions = analyseInvoices(state.invoices, state.suppliers, state.settings);
   const approvedInvoiceIds = decisions.filter(d => d.status === 'eligible' && !d.requiresApproval).map(d => d.invoiceId);
@@ -17,7 +17,7 @@ export function createRun(state: AppState): PaymentRun {
 export function initialState(): StoredState {
   const state: StoredState = {
     suppliers: structuredClone(fixtureSuppliers), invoices: structuredClone(fixtureInvoices), settings: { ...defaultSettings },
-    run: null, runHistory: [], fundingAttempts: [], bankBalancePence: 30000, stripeBalancePence: 1250000,
+    run: null, runHistory: [], memoryOutbox: [], fundingAttempts: [], bankBalancePence: 30000, stripeBalancePence: 1250000,
     policyVersion: policyVersion(defaultSettings),
     integrations: {
       stripe: {configured:false, connected:false, mode:'demo', message:'Sample balance. Add a Stripe sandbox key and payout destination to fund a run.'},
@@ -30,7 +30,9 @@ export function initialState(): StoredState {
 }
 export function readStore(): StoredState {
   if (!fs.existsSync(storePath)) { const state = initialState(); writeStore(state); return state; }
-  return JSON.parse(fs.readFileSync(storePath, 'utf8'));
+  const state=JSON.parse(fs.readFileSync(storePath, 'utf8'));
+  state.memoryOutbox ??= [];
+  return state;
 }
 export function writeStore(state: StoredState) {
   fs.mkdirSync(DATA_DIR, { recursive: true, mode: 0o700 });

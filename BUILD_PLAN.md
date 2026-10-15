@@ -11,14 +11,14 @@ The journey is **read invoices → retrieve evidence → validate policy → cal
 | Local application | React/TypeScript dashboard served by Vite; Express API on loopback | Single operator; no production authentication or public deployment |
 | Persistence | Atomic JSON writes to ignored `.data/state.json`, run history and funding ledger, process-local mutation queue | One server process; no SQLite or multi-process transactions |
 | Ingestion | Eight starting fixtures; JSON batch upload; optional OpenAI structured extraction from plain text | No PDF/OCR/email ingestion; runtime extraction key required for text |
-| Evidence | Invoice, canonical supplier contract, history and policy excerpts; genuine Cognee CHUNKS retrieval when configured | Local fixtures are labeled; no invented Cognee results or automatic outcome writeback |
+| Evidence | Invoice, canonical supplier contract, history and policy excerpts; genuine Cognee CHUNKS retrieval when configured; durable outcome and policy-history sync | Local fixtures are labeled; no invented Cognee results; failed sync stays queued without repeating a payout |
 | Policy | Supplier/bank match, duplicate checks, disputes, explicit dates, GBP arithmetic, contract terms, gross limits | Deterministic decisions; invoice text and model output cannot authorise a payout |
 | Scheduling | Separate funding, send and expected arrival dates; feasible contract discounts; integer pence | Weekdays only, no holidays/cut-offs or settlement guarantee |
 | Approval | Manual by default; configurable automatic approval below gross limit; higher eligible amounts require a person | Held invoices cannot be overridden; funding remains an operator action |
 | Funding | Available GBP sandbox balance, own-bank allowlist, shortfall, reserve and cap checks; persistent attempts and reconciliation | Real test API only; no live credentials, Connect recipients or simulated success |
 | Export | Approved eligible CSV marked `APPROVED_NOT_PAID`; JSON audit download | Generic review/handoff files, not certified bank imports; no supplier settlement |
 
-Cloud keys and a usable destination remain user setup dependencies. The adapters and mocked tests exist; end-to-end Stripe/Cognee verification has not yet been demonstrated with the user's credentials. No payout was created during implementation.
+The locally configured Cognee app key has verified tenant health, authentication and genuine CHUNKS retrieval from the dedicated `briefcase_demo` dataset after seeding seven demo documents. Stripe sandbox balance access is verified; a usable own-bank destination and actual test payout remain pending. No payout was created during implementation.
 
 ## Demo defaults and worked path
 
@@ -31,7 +31,7 @@ The clock controls local scheduling only. It does not advance Stripe time. A `pe
 ## Execution safeguards
 
 - Keep credentials in ignored local `.env`. Reject live keys before network access and require a Stripe balance with `livemode=false`.
-- Verify the configured `ba_…` GBP bank against the authenticated own Stripe account. If ownership cannot be verified, stop funding. Do not assume Connect bank-management endpoints work for a standalone account.
+- Require an explicit allowlisted `ba_…` bank ID and authenticated account with payouts enabled. Verify bank details locally when Stripe exposes them; on standalone accounts where the list is omitted, Stripe validates the configured bank on payout submission. Status must distinguish these cases. Never select a default bank or use Connect bank-management endpoints.
 - Revalidate approved obligations on the server before requesting the authorised shortfall. Preserve the Stripe reserve and cap; include pending, unknown and successful reservations.
 - Save an attempt and stable idempotency key before the request. Record amount, destination, run, invoices, policy and returned payout reference.
 - Treat ambiguous network/server responses as unknown. Reconcile known `po_…` IDs; if no ID arrived, inspect Stripe logs. Do not replace an unresolved attempt with a new key.
@@ -74,8 +74,8 @@ This is the timebox and acceptance sequence, not a claim that external setup has
 ## Remaining acceptance work
 
 1. User configures the Stripe sandbox test key, its own usable GBP bank destination and available balance. Confirm readiness in the app without changing to live credentials.
-2. User configures Cognee Cloud. Seed from **Policy → Seed demo memory**, wait for processing, run analysis and inspect genuine retrieved chunks.
-3. If plain-text extraction is needed for the demo, configure the runtime OpenAI key and test a new text invoice. Structured fixtures already support the walkthrough without it.
+2. Cognee Cloud seeding and scoped retrieval are verified. In the demo, run analysis and inspect the genuine retrieved chunks; reseed only when source documents change.
+3. OpenAI extraction has been verified on the synthetic Northstar text invoice, including the correct amount, discount, deadline and bank reference. Test another invoice through Upload invoices during the user walkthrough.
 4. Approve the intended eligible obligation, inspect the shortfall and request one test payout. Confirm the payout in Stripe; reconcile status without claiming supplier payment.
 5. Download CSV/audit, verify persistence and rehearse the explanation. Keep a transparent local-only walkthrough available if Cloud setup is incomplete; never substitute fake external success.
 

@@ -24,6 +24,7 @@ try {
   await start();
   let {data:s}=await request('/api/state');
   assert.equal(s.invoices.length,8);assert.equal(s.run.approvedInvoiceIds.length,0);
+  assert.equal((await request('/api/reconcile','POST',{})).data.run.status,'draft');
   assert.equal((await request('/api/approve','POST',{})).status,400);
   const oldRun=s.run;
   s=(await request('/api/analyse','POST',{})).data;

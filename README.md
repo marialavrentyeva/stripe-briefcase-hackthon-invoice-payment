@@ -2,7 +2,7 @@
 
 A local invoice-planning demo: inspect supplier evidence, check payment policy, capture eligible discounts, approve a schedule, and fund your **own business payments account** through the Stripe test Payouts API. Export the approved supplier payment plan as CSV for review.
 
-**Funding the business account does not pay suppliers.** No supplier bank-payment API is connected. Fixture bank balances, invoice records and supplier banking references are simulated. Stripe funding uses genuine test API requests only when a sandbox key and verified destination are configured; there is no mock-success fallback.
+**Funding the business account does not pay suppliers.** No supplier bank-payment API is connected. Fixture bank balances, invoice records and supplier banking references are simulated. Stripe funding uses genuine test API requests only when a sandbox key and explicit bank destination are configured; there is no mock-success fallback.
 
 ## Run locally
 
@@ -32,16 +32,17 @@ Enter credentials only in your local `.env`; it is ignored by Git. Never paste k
 | Variable | Purpose |
 | --- | --- |
 | `STRIPE_SECRET_KEY` | Stripe sandbox `sk_test_…` or appropriately permissioned `rk_test_…`; live keys are rejected |
-| `STRIPE_PAYOUT_DESTINATION` | Exact `ba_…` ID of your own sandbox GBP bank account, exposed by the authenticated Stripe account |
+| `STRIPE_PAYOUT_DESTINATION` | Exact `ba_…` ID of your own sandbox GBP bank account |
 | `COGNEE_API_KEY` | Cognee Cloud API key |
-| `COGNEE_BASE_URL` | Defaults to `https://api.cognee.ai` |
+| `COGNEE_BASE_URL` | Exact tenant API Base URL from Cloud → API Keys → Connection Details |
+| `COGNEE_TENANT_ID` | Tenant ID from the same Connection Details card, sent as `X-Tenant-Id` |
 | `COGNEE_DATASET_NAME` | Dedicated demo dataset; defaults to `briefcase_demo` |
 | `OPENAI_API_KEY` | Optional runtime API key for extracting new plain-text invoices |
 | `OPENAI_MODEL` | Extraction model; `.env.example` supplies the default |
 
-Stripe setup must provide available GBP test balance and a usable own bank destination. The adapter verifies test mode, ownership and currency before funding. A valid key with incomplete bank setup can show the real available balance while funding remains disabled. The bank-management APIs documented for Connect are not assumed to work on a standalone business account; if `/v1/account` does not expose the bank, check Stripe configuration and permissions.
+Stripe setup must provide available GBP test balance, `payouts_enabled=true` and an explicit own bank destination. When the account exposes its bank list, the adapter verifies ownership and GBP currency before funding. Standalone accounts can omit this list by design; their configured bank is validated by Stripe when the account-scoped payout is submitted, and the status message says so. The adapter never chooses a default bank or calls Connect bank-management endpoints. A valid key with incomplete setup can show the real available balance while funding remains disabled.
 
-For Cognee, select **Policy → Seed demo memory** after configuring the key. This uploads the current policy and supplier contract/history documents to the dedicated dataset and requests background processing. Wait for processing in Cognee Cloud, then select **Run agent**. Decisions show genuine retrieved source chunks when available. With a configured key, missing matching retrieval holds the affected invoice for review. Without a key, evidence remains explicitly local demo material. An accepted seed request is not proof that indexing has completed.
+For Cognee, use your provisioned tenant URL (such as `https://your-tenant.aws.cognee.ai`), not the older shared `api.cognee.ai` example. Select **Policy → Seed demo memory** after configuring the key. This uploads the current policy and supplier contract/history documents to the dedicated dataset and requests background processing. Wait for processing in Cognee Cloud, then select **Run agent**. Decisions show genuine retrieved source chunks when available. With a configured key, missing matching retrieval holds the affected invoice for review. Without a key, evidence remains explicitly local demo material. An accepted seed request is not proof that indexing has completed.
 
 Structured JSON invoice uploads work without an extraction key. Plain-text `.txt` uploads require OpenAI API access. PDF, scanned-invoice OCR and email ingestion are outside this build. A coding-agent subscription does not provide this app's runtime API credentials.
 
@@ -63,18 +64,21 @@ State persists in ignored `.data/state.json` through atomic file replacement. A 
 
 A funding attempt is saved before the Stripe request. Uncertain responses retain the attempt and idempotency key; automatic resubmission is disabled when no payout ID is known. Inspect Stripe request logs before resolving such an attempt. Pending or unknown funding blocks changes that would invalidate the run. The demo clock locks after a funding attempt, and workspace reset is disabled once any funding attempt exists to preserve its ledger. Do not delete `.data` to bypass those protections.
 
-There is no unattended scheduler, supplier payment execution, supplier bank reconciliation, production identity/access control, or automatic outcome writeback to Cognee. The generic CSV does not contain production bank details. Potential discounts are planned savings, not proof of realised savings.
+There is no unattended scheduler, supplier payment execution, supplier bank reconciliation or production identity/access control. The generic CSV does not contain production bank details. Potential discounts are planned savings, not proof of realised savings.
 
 ## Check the build
 
 ```sh
 npm test
+npm run test:api
 npm run build
 ```
 
 Tests cover policy/date calculations and mocked integration safety, including live-key rejection, destination verification, available balance, uncertain Stripe outcomes and scoped Cognee evidence. They do not validate a real cloud account. For manual acceptance, repeat the walkthrough, refresh the browser to verify persistence, change approval mode before funding, and confirm held invoices cannot be approved or exported.
 
-At this handoff, cloud configuration and end-to-end credentialed verification are still pending. No actual Stripe payout has been created by the build process. The user supplies local keys and the destination; a successful real test payout and Cognee retrieval must be demonstrated separately.
+Cognee tenant health, authentication and genuine CHUNKS retrieval from `briefcase_demo` have been verified with the locally configured app key. The Northstar contract was retrieved with service-provided document and chunk IDs. OpenAI correctly extracted the synthetic Northstar invoice's amount, discount, dates and bank reference. Stripe sandbox balance access has been verified; bank-destination setup and an actual test payout remain pending. No Stripe payout has been created by the build process.
+
+Policy changes and funding outcomes are queued durably for Cognee ingestion after local persistence. A failed memory sync never repeats a payout; the queue is retried at startup, after reconciliation, or through `POST /api/memory/sync`. Background indexing can finish after the local action completes. `POST /api/memory/seed` also flushes queued history. The audit export preserves the exact run and evidence used for funding.
 
 ## Code and references
 
@@ -84,4 +88,4 @@ At this handoff, cloud configuration and end-to-end credentialed verification ar
 - `server/stripe.ts`, `server/cognee.ts`, `server/extract.ts`: server-side integration adapters.
 - `public/demo/`: source examples and expected decisions.
 - [Written policy](docs/POLICY.md), [integration setup](docs/INTEGRATIONS.md), [build plan](BUILD_PLAN.md).
-- [Stripe Payouts API](https://docs.stripe.com/api/payouts/create), [Stripe idempotent requests](https://docs.stripe.com/api/idempotent_requests), [Cognee API reference](https://docs.cognee.ai/api-reference/introduction).
+- [Stripe Payouts API](https://docs.stripe.com/api/payouts/create), [Stripe idempotent requests](https://docs.stripe.com/api/idempotent_requests), [Cognee Cloud HTTP API](https://docs.cognee.ai/cognee-cloud/http-api).

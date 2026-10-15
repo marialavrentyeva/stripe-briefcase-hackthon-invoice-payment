@@ -15,6 +15,15 @@ This is a simulated GBP accounts-payable workflow. All amounts are stored as int
 | P09 | Use a contract-backed discount when its funding date has not passed. Round the discount once to the nearest penny; net = gross − discount. If its funding window has passed, use full payment against the ordinary due date when still feasible. |
 | P10 | Execute funding only when its funding date is due, with approval and policy revalidation. Hold invoices whose ordinary due date or safe funding window has passed. |
 
+## Funding clauses
+
+| Clause | Rule |
+| --- | --- |
+| F01 | Fund only the business's own configured GBP bank destination, verified against the authenticated Stripe account. Only Stripe test keys and test objects are allowed in this demo. |
+| F02 | Payout amount = max(0, approved eligible invoices due for funding − available payments-account balance − pending funding). The payments-account balance is explicitly simulated. Do not include held invoices or future funding obligations. |
+| F03 | Preserve the configured Stripe reserve and remain within the funding cap, counting prior successful, pending and unknown attempts. Save an attempt before calling Stripe; use its stable idempotency key. Unknown outcomes require reconciliation and cannot be blindly resubmitted. |
+| F04 | Funding must arrive before the planned supplier send date. A pending Stripe payout is not received funding; a funded payments account does not mean suppliers have been paid. Keep the payout receipt, exact run revision and decision evidence. |
+
 ## Calendar and scope
 
 Default settlement time is two working days and default payout lead time is two working days. Working days are Monday–Friday in a deterministic UTC date-only calendar. Weekend deadlines move to the preceding Friday before subtracting lead days. Public holidays, bank cut-off times and bank-specific settlement exceptions are not modelled; production rollout requires a banking calendar and provider settlement guarantees.
