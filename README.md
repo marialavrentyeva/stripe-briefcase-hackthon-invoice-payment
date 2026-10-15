@@ -1,8 +1,23 @@
 # Briefcase
 
-A local invoice-planning demo: inspect supplier evidence, check payment policy, capture eligible discounts, approve a schedule, and fund your **own business payments account** through the Stripe test Payouts API. Export the approved supplier payment plan as CSV for review.
+Briefcase helps a business keep cash in its account for longer by planning **when to pay each invoice**. It schedules ordinary invoices for their latest safe payment date and brings payments forward when an agreed early-payment discount is available, allowing time for settlement.
 
-**Funding the business account does not pay suppliers.** No supplier bank-payment API is connected. Fixture bank balances, invoice records and supplier banking references are simulated. Stripe funding uses genuine test API requests only when a sandbox key and explicit bank destination are configured; there is no mock-success fallback.
+The app checks invoices against supplier contracts, payment terms and history in **Cognee memory**, applies a written spending policy, and presents a payment schedule for approval. The dashboard shows daily payment runs, forecast balances, potential discounts and estimated interest earned from retaining cash at a 3% annual rate. Each decision links back to its policy rules and source evidence, so you can ask why a payment was scheduled or authorised.
+
+When approved obligations need funding, Briefcase calculates the shortfall and requests a **Stripe test-mode payout to the business’s own payments account**. It also exports the approved supplier payment run as CSV. Supplier payments themselves are not executed: the downstream bank ledger is simulated, and the CSV is a planning export.
+
+## Example workflow: the two-minute demo
+
+The prepared demo starts with **20 invoices: 19 eligible payments and one duplicate**, against a Stripe sandbox funded initially with **£50,000**. The dashboard uses the current Stripe balance, which changes after test payouts.
+
+1. **See the cash plan on Home.** Browse daily payments and the declining forecast balance. Ordinary invoices stay scheduled as late as safely possible; four discounted invoices offer **£564 in potential savings**. Estimated interest reflects the time from invoice ingestion to its scheduled payment date at 3% per year.
+2. **Open the agent and inspect the reasoning.** Ask “Why pay Northstar early?” Its £1,200 invoice offers a 2% discount: the plan schedules **£1,176**, sent on 19 October for expected arrival on 21 October. Supplier evidence from Cognee and the policy explain the timing.
+3. **Remove the one duplicate.** The agent flags a second copy of Paper & Pine Studio invoice **PAP-1042**. Click **Remove duplicate from run**. The original remains scheduled, and the exclusion stays in the audit history.
+4. **Approve the plan through chat.** Review the eligible invoices and click **Approve plan**. Approval authorises the schedule; it does not move money.
+5. **Fund only what is needed now.** The agent shows approved obligations due for funding, the payments-account balance, pending funding and the exact Stripe shortfall. Click **Confirm test payout** after reviewing the amount. Future obligations stay scheduled. In the prepared recording state, £2,076 is due and £1,176 is already in the simulated payments account, leaving **£900** to fund; the current preview is always authoritative.
+6. **Show the receipt and payment run.** In **Payment runs**, inspect the Stripe payout reference and refresh its status. Export the approved supplier CSV and audit trail to show the amounts, dates, approvals, policy clauses and evidence behind the run.
+
+This is a guided chat demo with real application actions. Stripe funding uses genuine sandbox API requests when configured; no real money moves. The forecast, interest and discounts are estimates, not realised returns. See [the recording flow](docs/RECORDING_FLOW.md) for timing and [the written policy](docs/POLICY.md) for controls.
 
 ## Run locally
 
@@ -40,21 +55,24 @@ Enter credentials only in your local `.env`; it is ignored by Git. Never paste k
 | `OPENAI_API_KEY` | Optional runtime API key for extracting new plain-text invoices |
 | `OPENAI_MODEL` | Extraction model; `.env.example` supplies the default |
 
-Stripe setup must provide available GBP test balance, `payouts_enabled=true` and an explicit own bank destination. When the account exposes its bank list, the adapter verifies ownership and GBP currency before funding. Standalone accounts can omit this list by design; their configured bank is validated by Stripe when the account-scoped payout is submitted, and the status message says so. The adapter never chooses a default bank or calls Connect bank-management endpoints. A valid key with incomplete setup can show the real available balance while funding remains disabled.
+Stripe setup must provide available GBP test balance and an explicit own bank destination. Normally payouts must be enabled. For a standalone sandbox that reports payouts disabled and omits its bank list, the adapter requires a previously paid test GBP bank payout to that exact destination before allowing funding. When the account exposes its bank list, the adapter verifies ownership and GBP currency before funding. Standalone accounts can omit this list by design; their configured bank is validated by Stripe when the account-scoped payout is submitted, and the status message says so. The adapter never chooses a default bank or calls Connect bank-management endpoints. A valid key with incomplete setup can show the real available balance while funding remains disabled.
 
-For Cognee, use your provisioned tenant URL (such as `https://your-tenant.aws.cognee.ai`), not the older shared `api.cognee.ai` example. Select **Policy → Seed demo memory** after configuring the key. This uploads the current policy and supplier contract/history documents to the dedicated dataset and requests background processing. Wait for processing in Cognee Cloud, then select **Run agent**. Decisions show genuine retrieved source chunks when available. With a configured key, missing matching retrieval holds the affected invoice for review. Without a key, evidence remains explicitly local demo material. An accepted seed request is not proof that indexing has completed.
+For Cognee, use your provisioned tenant URL (such as `https://your-tenant.aws.cognee.ai`), not the older shared `api.cognee.ai` example. Select **Policy → Seed demo memory** after configuring the key. This uploads the current policy and supplier contract/history documents to the dedicated dataset and requests background processing. Wait for processing in Cognee Cloud, then use **Open agent** to check invoices again. Decisions show genuine retrieved source chunks when available. With a configured key, missing matching retrieval holds the affected invoice for review. Without a key, evidence remains explicitly local demo material. An accepted seed request is not proof that indexing has completed.
 
 Structured JSON invoice uploads work without an extraction key. Plain-text `.txt` uploads require OpenAI API access. PDF, scanned-invoice OCR and email ingestion are outside this build. A coding-agent subscription does not provide this app's runtime API credentials.
 
-## Walk through the demo
+## Prepare the demo dataset
 
-1. Open an invoice and inspect its source, contract, history, checks and calculated dates. **Run agent** recalculates the plan.
-2. Inspect the exceptions: duplicate invoice, changed bank reference, unknown supplier, open dispute and ambiguous due date. Approval cannot override those holds.
-3. Review **Policy**. Manual approval is the default. Automatic mode authorises eligible invoices at or below its gross-amount limit; larger eligible invoices still need manual approval. Funding always requires an operator action. Policy changes recalculate the run and clear prior manual approvals.
-4. Approve eligible invoices. On the default demo date, Northstar Cloud's £1,200 invoice qualifies for a £24 discount: £1,176 net, funding date 15 October, send date 19 October, expected arrival 21 October. It needs manual approval even in automatic mode because gross exceeds £1,000.
-5. Inspect the funding preview. With the initial simulated £300 payments-account balance, Northstar's due funding shortfall is £876. Future funding obligations are excluded until their scheduled funding date. The daily cap and retained Stripe reserve still apply.
-6. Once Stripe is connected and the preview permits it, use the funding action to request a **test payout to your own account**. Inspect the `po_…` reference in Stripe and use **Payment runs → Refresh status** to reconcile. `pending` means requested/in transit; `paid` means the test payout reports completion. Neither status means suppliers were paid.
-7. Download **Export payment CSV** and **Audit trail**. The CSV contains approved eligible rows marked `APPROVED_NOT_PAID`; it is a generic planning file, not a certified bank upload format or an execution receipt. The JSON audit retains decision and funding records. Do not submit the demo CSV to a real bank.
+A fresh install contains eight invoices covering several exception types. To prepare the focused walkthrough above, run these requests against the local server, in order:
+
+```sh
+curl -X POST http://127.0.0.1:3001/api/demo/expand
+curl -X POST http://127.0.0.1:3001/api/demo/prepare-recording
+```
+
+Expansion adds suppliers and invoices with staggered dates and more discounts. Recording preparation archives the other exception examples, leaving the duplicate for review. These actions preserve existing funding history and balances; they do not create a payout. With Cognee configured, allow the new source documents to finish indexing before checking invoices again through **Open agent**. A fresh workspace's £300 simulated payments-account balance will produce a different funding shortfall from the previously funded recording state.
+
+The CSV contains approved eligible rows marked `APPROVED_NOT_PAID`. It is a generic planning file, not a certified bank upload format or an execution receipt. The JSON audit retains decision and funding records. Do not submit demo banking references to a real bank.
 
 The demo clock starts at **15 October 2026** and affects local scheduling only; it cannot advance Stripe. Lead times assume Monday–Friday working days, excluding public holidays and bank cut-offs. The £300 bank balance is simulated, and a reconciled successful test payout credits that local simulation only. No bank account balance is fetched.
 
@@ -76,7 +94,7 @@ npm run build
 
 Tests cover policy/date calculations and mocked integration safety, including live-key rejection, destination verification, available balance, uncertain Stripe outcomes and scoped Cognee evidence. They do not validate a real cloud account. For manual acceptance, repeat the walkthrough, refresh the browser to verify persistence, change approval mode before funding, and confirm held invoices cannot be approved or exported.
 
-Cognee tenant health, authentication and genuine CHUNKS retrieval from `briefcase_demo` have been verified with the locally configured app key. The Northstar contract was retrieved with service-provided document and chunk IDs. OpenAI correctly extracted the synthetic Northstar invoice's amount, discount, dates and bank reference. Stripe sandbox balance access has been verified; bank-destination setup and an actual test payout remain pending. No Stripe payout has been created by the build process.
+Cognee tenant health, authentication and genuine CHUNKS retrieval from `briefcase_demo` have been verified with the locally configured app key. The Northstar contract was retrieved with service-provided document and chunk IDs. OpenAI correctly extracted the synthetic Northstar invoice's amount, discount, dates and bank reference. Stripe sandbox balance access and a completed £876 test payout to the configured business bank destination have also been verified in the development workspace. These checks do not configure credentials or recreate funding history in a fresh installation.
 
 Policy changes and funding outcomes are queued durably for Cognee ingestion after local persistence. A failed memory sync never repeats a payout; the queue is retried at startup, after reconciliation, or through `POST /api/memory/sync`. Background indexing can finish after the local action completes. `POST /api/memory/seed` also flushes queued history. The audit export preserves the exact run and evidence used for funding.
 
