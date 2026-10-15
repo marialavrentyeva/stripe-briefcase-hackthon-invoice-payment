@@ -1,0 +1,13 @@
+SIMULATED INVOICE — FOR DEMONSTRATION ONLY
+Supplier: Moss Research
+Supplier ID: sup-research
+Invoice number: MR-019
+Issue date: 2026-10-14
+Due date: 11/12 (year unspecified)
+Terms: Pay next month, 11/12. Please confirm exact due date.
+Subtotal: GBP 437.50
+VAT: GBP 87.50
+Total: GBP 525.00
+Currency: GBP
+Bank reference: SIM-BANK-MOSS-006
+These references are fictional identifiers, not bank account details.

@@ -1,0 +1,13 @@
+SIMULATED INVOICE — FOR DEMONSTRATION ONLY
+Supplier: Blue Ridge Advisory
+Supplier ID: sup-unknown
+Invoice number: BR-008
+Issue date: 2026-10-10
+Due date: October 30, 2026
+Terms: Full payment due October 30, 2026.
+Subtotal: GBP 249.17
+VAT: GBP 49.83
+Total: GBP 299.00
+Currency: GBP
+Bank reference: SIM-BANK-UNVERIFIED-009
+These references are fictional identifiers, not bank account details.

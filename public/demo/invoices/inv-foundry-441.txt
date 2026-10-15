@@ -1,0 +1,13 @@
+SIMULATED INVOICE — FOR DEMONSTRATION ONLY
+Supplier: Foundry Events
+Supplier ID: sup-venue
+Invoice number: FE-441
+Issue date: 2026-10-13
+Due date: 5 November 2026
+Terms: Full amount due 5 November 2026. No discount.
+Subtotal: GBP 1533.33
+VAT: GBP 306.67
+Total: GBP 1840.00
+Currency: GBP
+Bank reference: SIM-BANK-FOUNDRY-005
+These references are fictional identifiers, not bank account details.

@@ -1,0 +1,4 @@
+simulation_status,invoice_id,supplier_name,fictional_bank_reference,currency,amount_pence,send_date,arrival_date,approval_status
+SIMULATED_NOT_EXECUTED,inv-paper-1042,Paper & Pine Studio,SIM-BANK-PAPER-001,GBP,78000,2026-10-29,2026-11-02,REQUIRES_HUMAN_APPROVAL
+SIMULATED_NOT_EXECUTED,inv-cloud-1088,Northstar Cloud,SIM-BANK-CLOUD-002,GBP,117600,2026-10-19,2026-10-21,REQUIRES_HUMAN_APPROVAL
+SIMULATED_NOT_EXECUTED,inv-foundry-441,Foundry Events,SIM-BANK-FOUNDRY-005,GBP,184000,2026-11-03,2026-11-05,REQUIRES_HUMAN_APPROVAL

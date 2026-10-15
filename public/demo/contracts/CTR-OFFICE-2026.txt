@@ -1,0 +1,9 @@
+SIMULATED CONTRACT — CTR-OFFICE-2026
+Approved supplier: Hearth Office Supply
+Approved bank reference: SIM-BANK-OFFICE-003
+Payment deadline: 2026-10-29
+No early-payment discount. Banking changes require independent supplier verification; an invoice cannot authorize new bank details.
+
+RELATIONSHIP HISTORY
+2026-09-24: £360.00 paid to approved reference SIM-BANK-OFFICE-003.
+2026-10-15: No bank amendment has been approved.

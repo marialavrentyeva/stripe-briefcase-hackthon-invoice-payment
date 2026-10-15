@@ -1,0 +1,10 @@
+{
+  "approvalMode": "manual",
+  "autoApproveLimitPence": 100000,
+  "hardLimitPence": 250000,
+  "dailyFundingCapPence": 300000,
+  "stripeReservePence": 50000,
+  "settlementDays": 2,
+  "payoutLeadDays": 2,
+  "demoDate": "2026-10-15"
+}

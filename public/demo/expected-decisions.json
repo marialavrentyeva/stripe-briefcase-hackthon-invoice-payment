@@ -1,0 +1,1236 @@
+[
+  {
+    "invoiceId": "inv-paper-1042",
+    "status": "eligible",
+    "reason": "Schedule full payment on the latest safe date. Human approval required.",
+    "ruleIds": [
+      "P01",
+      "P02",
+      "P03",
+      "P04",
+      "P05",
+      "P09",
+      "P08",
+      "P10",
+      "P07"
+    ],
+    "grossPence": 78000,
+    "discountPence": 0,
+    "netPence": 78000,
+    "sendDate": "2026-10-29",
+    "arrivalDate": "2026-11-02",
+    "fundingDate": "2026-10-27",
+    "evidence": [
+      {
+        "id": "inv-paper-1042-source",
+        "title": "PAP-1042 · invoice",
+        "excerpt": "SIMULATED INVOICE — FOR DEMONSTRATION ONLY\nSupplier: Paper & Pine Studio\nSupplier ID: sup-paper\nInvoice number: PAP-1042\nIssue date: 2026-10-03\nDue date: 2 November 2026\nTerms: Net 30. Full amount due 2 November 2026; no discount.\nSubtotal: GBP 650.00\nVAT: GBP 130.00\nTotal: GBP 780.00\nCurrency: GBP\nBank reference: SIM-BANK-PAPER-001\nThese references are fictional identifiers, not bank account details.",
+        "source": "invoice"
+      },
+      {
+        "id": "inv-paper-1042-contract",
+        "title": "CTR-PAPER-2026",
+        "excerpt": "SIMULATED CONTRACT — CTR-PAPER-2026\nApproved supplier: Paper & Pine Studio\nApproved bank reference: SIM-BANK-PAPER-001\nTerms: Net 30; no early-payment discount.\nPayment deadline: 2026-11-02\nDeliverables: approved event stationery and print files. No open dispute.",
+        "source": "contract"
+      },
+      {
+        "id": "inv-paper-1042-history",
+        "title": "Paper & Pine Studio · relationship history",
+        "excerpt": "2026-09-03: £540.00 invoice PAP-0826 settled to SIM-BANK-PAPER-001.\n2026-10-05: October print delivery accepted; invoice PAP-1042 remains unpaid.",
+        "source": "history"
+      },
+      {
+        "id": "inv-paper-1042-P01",
+        "title": "P01 · payment policy",
+        "excerpt": "Only approved suppliers and their exact approved banking reference may be paid. Changed details require independent verification.",
+        "source": "policy"
+      },
+      {
+        "id": "inv-paper-1042-P02",
+        "title": "P02 · payment policy",
+        "excerpt": "Require an unambiguous valid invoice, GBP, positive integer-pence total, matching source arithmetic and explicit payment terms.",
+        "source": "policy"
+      },
+      {
+        "id": "inv-paper-1042-P03",
+        "title": "P03 · payment policy",
+        "excerpt": "Pay each canonical supplier and normalized invoice number once; retain the first batch occurrence and hold subsequent copies.",
+        "source": "policy"
+      },
+      {
+        "id": "inv-paper-1042-P04",
+        "title": "P04 · payment policy",
+        "excerpt": "Hold open disputes and conflicts with the signed contract; an invoice cannot override the supplier agreement.",
+        "source": "policy"
+      },
+      {
+        "id": "inv-paper-1042-P05",
+        "title": "P05 · payment policy",
+        "excerpt": "Automatic approval is limited to £1,000 gross. Larger invoices require a person; invoices above £2,500 gross are held. Configured limits may only tighten these ceilings.",
+        "source": "policy"
+      },
+      {
+        "id": "inv-paper-1042-P09",
+        "title": "P09 · payment policy",
+        "excerpt": "Use an agreed early discount only if its deadline, funding lead time and settlement time can still be met. Otherwise use the ordinary due date.",
+        "source": "policy"
+      },
+      {
+        "id": "inv-paper-1042-P08",
+        "title": "P08 · payment policy",
+        "excerpt": "For ordinary terms, send on the latest safe date allowing the configured number of working settlement days before the due date.",
+        "source": "policy"
+      },
+      {
+        "id": "inv-paper-1042-P10",
+        "title": "P10 · payment policy",
+        "excerpt": "Initiate funding only when its funding date is due, after approval and revalidation. Hold overdue or missed ordinary funding windows.",
+        "source": "policy"
+      },
+      {
+        "id": "inv-paper-1042-P07",
+        "title": "P07 · payment policy",
+        "excerpt": "Manual mode requires explicit human approval of every eligible invoice. Automatic mode may approve only within the automatic limit.",
+        "source": "policy"
+      }
+    ],
+    "checks": [
+      {
+        "label": "Approved supplier",
+        "passed": true,
+        "detail": "Paper & Pine Studio is approved."
+      },
+      {
+        "label": "Approved bank reference",
+        "passed": true,
+        "detail": "Invoice matches the approved banking reference."
+      },
+      {
+        "label": "Supported currency",
+        "passed": true,
+        "detail": "GBP supported."
+      },
+      {
+        "label": "Invoice amount",
+        "passed": true,
+        "detail": "Positive integer-pence total; available source totals reconcile."
+      },
+      {
+        "label": "Unique invoice",
+        "passed": true,
+        "detail": "No earlier batch occurrence with this supplier and invoice number."
+      },
+      {
+        "label": "No open dispute",
+        "passed": true,
+        "detail": "No recorded open dispute."
+      },
+      {
+        "label": "Contract terms",
+        "passed": true,
+        "detail": "Recognized explicit contract dates and claimed discounts agree."
+      },
+      {
+        "label": "Policy settings",
+        "passed": true,
+        "detail": "Scheduling and approval settings are valid."
+      },
+      {
+        "label": "Hard payment limit",
+        "passed": true,
+        "detail": "Within the gross payment ceiling."
+      },
+      {
+        "label": "Explicit payment dates",
+        "passed": true,
+        "detail": "Issue and due dates are explicit and ordered."
+      },
+      {
+        "label": "Discount terms",
+        "passed": true,
+        "detail": "Discount fields are valid or no discount is claimed."
+      },
+      {
+        "label": "Funding window",
+        "passed": true,
+        "detail": "Fund on 2026-10-27; send on 2026-10-29; arrive by 2026-11-02."
+      }
+    ],
+    "requiresApproval": true
+  },
+  {
+    "invoiceId": "inv-cloud-1088",
+    "status": "eligible",
+    "reason": "Agreed discount secured by the latest safe schedule. Human approval required.",
+    "ruleIds": [
+      "P01",
+      "P02",
+      "P03",
+      "P04",
+      "P05",
+      "P09",
+      "P10",
+      "P07"
+    ],
+    "grossPence": 120000,
+    "discountPence": 2400,
+    "netPence": 117600,
+    "sendDate": "2026-10-19",
+    "arrivalDate": "2026-10-21",
+    "fundingDate": "2026-10-15",
+    "evidence": [
+      {
+        "id": "inv-cloud-1088-source",
+        "title": "NS-1088 · invoice",
+        "excerpt": "SIMULATED INVOICE — FOR DEMONSTRATION ONLY\nSupplier: Northstar Cloud\nSupplier ID: sup-cloud\nInvoice number: NS-1088\nIssue date: 2026-10-01\nDue date: 30/10/2026\nTerms: 2% discount if received by 21 October 2026; otherwise due 30 October 2026.\nSubtotal: GBP 1000.00\nVAT: GBP 200.00\nTotal: GBP 1200.00\nCurrency: GBP\nBank reference: SIM-BANK-CLOUD-002\nThese references are fictional identifiers, not bank account details.",
+        "source": "invoice"
+      },
+      {
+        "id": "inv-cloud-1088-contract",
+        "title": "CTR-CLOUD-2026",
+        "excerpt": "SIMULATED CONTRACT — CTR-CLOUD-2026\nApproved supplier: Northstar Cloud\nApproved bank reference: SIM-BANK-CLOUD-002\nDiscount: 2% if received by 2026-10-21.\nPayment deadline: 2026-10-30\nThe early-payment discount applies to the gross invoice total. Service accepted.",
+        "source": "contract"
+      },
+      {
+        "id": "inv-cloud-1088-history",
+        "title": "Northstar Cloud · relationship history",
+        "excerpt": "2026-09-18: Prior £1,200.00 invoice paid at £1,176.00 with agreed 2% discount.\n2026-10-14: Service delivery confirmed; no credits or disputes outstanding.",
+        "source": "history"
+      },
+      {
+        "id": "inv-cloud-1088-P01",
+        "title": "P01 · payment policy",
+        "excerpt": "Only approved suppliers and their exact approved banking reference may be paid. Changed details require independent verification.",
+        "source": "policy"
+      },
+      {
+        "id": "inv-cloud-1088-P02",
+        "title": "P02 · payment policy",
+        "excerpt": "Require an unambiguous valid invoice, GBP, positive integer-pence total, matching source arithmetic and explicit payment terms.",
+        "source": "policy"
+      },
+      {
+        "id": "inv-cloud-1088-P03",
+        "title": "P03 · payment policy",
+        "excerpt": "Pay each canonical supplier and normalized invoice number once; retain the first batch occurrence and hold subsequent copies.",
+        "source": "policy"
+      },
+      {
+        "id": "inv-cloud-1088-P04",
+        "title": "P04 · payment policy",
+        "excerpt": "Hold open disputes and conflicts with the signed contract; an invoice cannot override the supplier agreement.",
+        "source": "policy"
+      },
+      {
+        "id": "inv-cloud-1088-P05",
+        "title": "P05 · payment policy",
+        "excerpt": "Automatic approval is limited to £1,000 gross. Larger invoices require a person; invoices above £2,500 gross are held. Configured limits may only tighten these ceilings.",
+        "source": "policy"
+      },
+      {
+        "id": "inv-cloud-1088-P09",
+        "title": "P09 · payment policy",
+        "excerpt": "Use an agreed early discount only if its deadline, funding lead time and settlement time can still be met. Otherwise use the ordinary due date.",
+        "source": "policy"
+      },
+      {
+        "id": "inv-cloud-1088-P10",
+        "title": "P10 · payment policy",
+        "excerpt": "Initiate funding only when its funding date is due, after approval and revalidation. Hold overdue or missed ordinary funding windows.",
+        "source": "policy"
+      },
+      {
+        "id": "inv-cloud-1088-P07",
+        "title": "P07 · payment policy",
+        "excerpt": "Manual mode requires explicit human approval of every eligible invoice. Automatic mode may approve only within the automatic limit.",
+        "source": "policy"
+      }
+    ],
+    "checks": [
+      {
+        "label": "Approved supplier",
+        "passed": true,
+        "detail": "Northstar Cloud is approved."
+      },
+      {
+        "label": "Approved bank reference",
+        "passed": true,
+        "detail": "Invoice matches the approved banking reference."
+      },
+      {
+        "label": "Supported currency",
+        "passed": true,
+        "detail": "GBP supported."
+      },
+      {
+        "label": "Invoice amount",
+        "passed": true,
+        "detail": "Positive integer-pence total; available source totals reconcile."
+      },
+      {
+        "label": "Unique invoice",
+        "passed": true,
+        "detail": "No earlier batch occurrence with this supplier and invoice number."
+      },
+      {
+        "label": "No open dispute",
+        "passed": true,
+        "detail": "No recorded open dispute."
+      },
+      {
+        "label": "Contract terms",
+        "passed": true,
+        "detail": "Recognized explicit contract dates and claimed discounts agree."
+      },
+      {
+        "label": "Policy settings",
+        "passed": true,
+        "detail": "Scheduling and approval settings are valid."
+      },
+      {
+        "label": "Hard payment limit",
+        "passed": true,
+        "detail": "Within the gross payment ceiling."
+      },
+      {
+        "label": "Explicit payment dates",
+        "passed": true,
+        "detail": "Issue and due dates are explicit and ordered."
+      },
+      {
+        "label": "Discount terms",
+        "passed": true,
+        "detail": "Discount fields are valid or no discount is claimed."
+      },
+      {
+        "label": "Funding window",
+        "passed": true,
+        "detail": "Fund on 2026-10-15; send on 2026-10-19; arrive by 2026-10-21."
+      }
+    ],
+    "requiresApproval": true
+  },
+  {
+    "invoiceId": "inv-paper-copy",
+    "status": "blocked",
+    "reason": "Duplicate supplier and invoice number: a prior batch occurrence is already retained.",
+    "ruleIds": [
+      "P01",
+      "P02",
+      "P03",
+      "P04",
+      "P05",
+      "P09",
+      "P08",
+      "P10",
+      "P07"
+    ],
+    "grossPence": 78000,
+    "discountPence": 0,
+    "netPence": 78000,
+    "sendDate": null,
+    "arrivalDate": null,
+    "fundingDate": null,
+    "evidence": [
+      {
+        "id": "inv-paper-copy-source",
+        "title": "pap 1042 · invoice",
+        "excerpt": "SIMULATED INVOICE — FOR DEMONSTRATION ONLY\nSupplier: Paper & Pine Studio\nSupplier ID: sup-paper\nInvoice number: pap 1042\nIssue date: 2026-10-03\nDue date: 2026-11-02\nTerms: Net 30. Resent copy of invoice PAP-1042; do not pay twice.\nSubtotal: GBP 650.00\nVAT: GBP 130.00\nTotal: GBP 780.00\nCurrency: GBP\nBank reference: SIM-BANK-PAPER-001\nThese references are fictional identifiers, not bank account details.",
+        "source": "invoice"
+      },
+      {
+        "id": "inv-paper-copy-contract",
+        "title": "CTR-PAPER-2026",
+        "excerpt": "SIMULATED CONTRACT — CTR-PAPER-2026\nApproved supplier: Paper & Pine Studio\nApproved bank reference: SIM-BANK-PAPER-001\nTerms: Net 30; no early-payment discount.\nPayment deadline: 2026-11-02\nDeliverables: approved event stationery and print files. No open dispute.",
+        "source": "contract"
+      },
+      {
+        "id": "inv-paper-copy-history",
+        "title": "Paper & Pine Studio · relationship history",
+        "excerpt": "2026-09-03: £540.00 invoice PAP-0826 settled to SIM-BANK-PAPER-001.\n2026-10-05: October print delivery accepted; invoice PAP-1042 remains unpaid.",
+        "source": "history"
+      },
+      {
+        "id": "inv-paper-copy-P01",
+        "title": "P01 · payment policy",
+        "excerpt": "Only approved suppliers and their exact approved banking reference may be paid. Changed details require independent verification.",
+        "source": "policy"
+      },
+      {
+        "id": "inv-paper-copy-P02",
+        "title": "P02 · payment policy",
+        "excerpt": "Require an unambiguous valid invoice, GBP, positive integer-pence total, matching source arithmetic and explicit payment terms.",
+        "source": "policy"
+      },
+      {
+        "id": "inv-paper-copy-P03",
+        "title": "P03 · payment policy",
+        "excerpt": "Pay each canonical supplier and normalized invoice number once; retain the first batch occurrence and hold subsequent copies.",
+        "source": "policy"
+      },
+      {
+        "id": "inv-paper-copy-P04",
+        "title": "P04 · payment policy",
+        "excerpt": "Hold open disputes and conflicts with the signed contract; an invoice cannot override the supplier agreement.",
+        "source": "policy"
+      },
+      {
+        "id": "inv-paper-copy-P05",
+        "title": "P05 · payment policy",
+        "excerpt": "Automatic approval is limited to £1,000 gross. Larger invoices require a person; invoices above £2,500 gross are held. Configured limits may only tighten these ceilings.",
+        "source": "policy"
+      },
+      {
+        "id": "inv-paper-copy-P09",
+        "title": "P09 · payment policy",
+        "excerpt": "Use an agreed early discount only if its deadline, funding lead time and settlement time can still be met. Otherwise use the ordinary due date.",
+        "source": "policy"
+      },
+      {
+        "id": "inv-paper-copy-P08",
+        "title": "P08 · payment policy",
+        "excerpt": "For ordinary terms, send on the latest safe date allowing the configured number of working settlement days before the due date.",
+        "source": "policy"
+      },
+      {
+        "id": "inv-paper-copy-P10",
+        "title": "P10 · payment policy",
+        "excerpt": "Initiate funding only when its funding date is due, after approval and revalidation. Hold overdue or missed ordinary funding windows.",
+        "source": "policy"
+      },
+      {
+        "id": "inv-paper-copy-P07",
+        "title": "P07 · payment policy",
+        "excerpt": "Manual mode requires explicit human approval of every eligible invoice. Automatic mode may approve only within the automatic limit.",
+        "source": "policy"
+      }
+    ],
+    "checks": [
+      {
+        "label": "Approved supplier",
+        "passed": true,
+        "detail": "Paper & Pine Studio is approved."
+      },
+      {
+        "label": "Approved bank reference",
+        "passed": true,
+        "detail": "Invoice matches the approved banking reference."
+      },
+      {
+        "label": "Supported currency",
+        "passed": true,
+        "detail": "GBP supported."
+      },
+      {
+        "label": "Invoice amount",
+        "passed": true,
+        "detail": "Positive integer-pence total; available source totals reconcile."
+      },
+      {
+        "label": "Unique invoice",
+        "passed": false,
+        "detail": "Duplicate supplier and invoice number: a prior batch occurrence is already retained."
+      },
+      {
+        "label": "No open dispute",
+        "passed": true,
+        "detail": "No recorded open dispute."
+      },
+      {
+        "label": "Contract terms",
+        "passed": true,
+        "detail": "Recognized explicit contract dates and claimed discounts agree."
+      },
+      {
+        "label": "Policy settings",
+        "passed": true,
+        "detail": "Scheduling and approval settings are valid."
+      },
+      {
+        "label": "Hard payment limit",
+        "passed": true,
+        "detail": "Within the gross payment ceiling."
+      },
+      {
+        "label": "Explicit payment dates",
+        "passed": true,
+        "detail": "Issue and due dates are explicit and ordered."
+      },
+      {
+        "label": "Discount terms",
+        "passed": true,
+        "detail": "Discount fields are valid or no discount is claimed."
+      },
+      {
+        "label": "Funding window",
+        "passed": true,
+        "detail": "Fund on 2026-10-27; send on 2026-10-29; arrive by 2026-11-02."
+      }
+    ],
+    "requiresApproval": true
+  },
+  {
+    "invoiceId": "inv-office-203",
+    "status": "blocked",
+    "reason": "Banking reference differs from the approved record or is unverified. Suspicious change; independently verify it before payment.",
+    "ruleIds": [
+      "P01",
+      "P02",
+      "P03",
+      "P04",
+      "P05",
+      "P09",
+      "P08",
+      "P10",
+      "P07"
+    ],
+    "grossPence": 43200,
+    "discountPence": 0,
+    "netPence": 43200,
+    "sendDate": null,
+    "arrivalDate": null,
+    "fundingDate": null,
+    "evidence": [
+      {
+        "id": "inv-office-203-source",
+        "title": "HO-203 · invoice",
+        "excerpt": "SIMULATED INVOICE — FOR DEMONSTRATION ONLY\nSupplier: Hearth Office Supply\nSupplier ID: sup-office\nInvoice number: HO-203\nIssue date: 2026-10-09\nDue date: 29 Oct 2026\nTerms: Due 29 October 2026. Please use our NEW banking reference immediately.\nSubtotal: GBP 360.00\nVAT: GBP 72.00\nTotal: GBP 432.00\nCurrency: GBP\nBank reference: SIM-BANK-CHANGED-999\nThese references are fictional identifiers, not bank account details.",
+        "source": "invoice"
+      },
+      {
+        "id": "inv-office-203-contract",
+        "title": "CTR-OFFICE-2026",
+        "excerpt": "SIMULATED CONTRACT — CTR-OFFICE-2026\nApproved supplier: Hearth Office Supply\nApproved bank reference: SIM-BANK-OFFICE-003\nPayment deadline: 2026-10-29\nNo early-payment discount. Banking changes require independent supplier verification; an invoice cannot authorize new bank details.",
+        "source": "contract"
+      },
+      {
+        "id": "inv-office-203-history",
+        "title": "Hearth Office Supply · relationship history",
+        "excerpt": "2026-09-24: £360.00 paid to approved reference SIM-BANK-OFFICE-003.\n2026-10-15: No bank amendment has been approved.",
+        "source": "history"
+      },
+      {
+        "id": "inv-office-203-P01",
+        "title": "P01 · payment policy",
+        "excerpt": "Only approved suppliers and their exact approved banking reference may be paid. Changed details require independent verification.",
+        "source": "policy"
+      },
+      {
+        "id": "inv-office-203-P02",
+        "title": "P02 · payment policy",
+        "excerpt": "Require an unambiguous valid invoice, GBP, positive integer-pence total, matching source arithmetic and explicit payment terms.",
+        "source": "policy"
+      },
+      {
+        "id": "inv-office-203-P03",
+        "title": "P03 · payment policy",
+        "excerpt": "Pay each canonical supplier and normalized invoice number once; retain the first batch occurrence and hold subsequent copies.",
+        "source": "policy"
+      },
+      {
+        "id": "inv-office-203-P04",
+        "title": "P04 · payment policy",
+        "excerpt": "Hold open disputes and conflicts with the signed contract; an invoice cannot override the supplier agreement.",
+        "source": "policy"
+      },
+      {
+        "id": "inv-office-203-P05",
+        "title": "P05 · payment policy",
+        "excerpt": "Automatic approval is limited to £1,000 gross. Larger invoices require a person; invoices above £2,500 gross are held. Configured limits may only tighten these ceilings.",
+        "source": "policy"
+      },
+      {
+        "id": "inv-office-203-P09",
+        "title": "P09 · payment policy",
+        "excerpt": "Use an agreed early discount only if its deadline, funding lead time and settlement time can still be met. Otherwise use the ordinary due date.",
+        "source": "policy"
+      },
+      {
+        "id": "inv-office-203-P08",
+        "title": "P08 · payment policy",
+        "excerpt": "For ordinary terms, send on the latest safe date allowing the configured number of working settlement days before the due date.",
+        "source": "policy"
+      },
+      {
+        "id": "inv-office-203-P10",
+        "title": "P10 · payment policy",
+        "excerpt": "Initiate funding only when its funding date is due, after approval and revalidation. Hold overdue or missed ordinary funding windows.",
+        "source": "policy"
+      },
+      {
+        "id": "inv-office-203-P07",
+        "title": "P07 · payment policy",
+        "excerpt": "Manual mode requires explicit human approval of every eligible invoice. Automatic mode may approve only within the automatic limit.",
+        "source": "policy"
+      }
+    ],
+    "checks": [
+      {
+        "label": "Approved supplier",
+        "passed": true,
+        "detail": "Hearth Office Supply is approved."
+      },
+      {
+        "label": "Approved bank reference",
+        "passed": false,
+        "detail": "Banking reference differs from the approved record or is unverified. Suspicious change; independently verify it before payment."
+      },
+      {
+        "label": "Supported currency",
+        "passed": true,
+        "detail": "GBP supported."
+      },
+      {
+        "label": "Invoice amount",
+        "passed": true,
+        "detail": "Positive integer-pence total; available source totals reconcile."
+      },
+      {
+        "label": "Unique invoice",
+        "passed": true,
+        "detail": "No earlier batch occurrence with this supplier and invoice number."
+      },
+      {
+        "label": "No open dispute",
+        "passed": true,
+        "detail": "No recorded open dispute."
+      },
+      {
+        "label": "Contract terms",
+        "passed": true,
+        "detail": "Recognized explicit contract dates and claimed discounts agree."
+      },
+      {
+        "label": "Policy settings",
+        "passed": true,
+        "detail": "Scheduling and approval settings are valid."
+      },
+      {
+        "label": "Hard payment limit",
+        "passed": true,
+        "detail": "Within the gross payment ceiling."
+      },
+      {
+        "label": "Explicit payment dates",
+        "passed": true,
+        "detail": "Issue and due dates are explicit and ordered."
+      },
+      {
+        "label": "Discount terms",
+        "passed": true,
+        "detail": "Discount fields are valid or no discount is claimed."
+      },
+      {
+        "label": "Funding window",
+        "passed": true,
+        "detail": "Fund on 2026-10-23; send on 2026-10-27; arrive by 2026-10-29."
+      }
+    ],
+    "requiresApproval": true
+  },
+  {
+    "invoiceId": "inv-unknown-008",
+    "status": "blocked",
+    "reason": "Unknown supplier: complete onboarding before payment. Banking reference differs from the approved record or is unverified. Suspicious change; independently verify it before payment. Approved contract has no recognized explicit payment deadline. Review and normalize its terms before scheduling.",
+    "ruleIds": [
+      "P01",
+      "P02",
+      "P03",
+      "P04",
+      "P05",
+      "P09",
+      "P08",
+      "P10",
+      "P07"
+    ],
+    "grossPence": 29900,
+    "discountPence": 0,
+    "netPence": 29900,
+    "sendDate": null,
+    "arrivalDate": null,
+    "fundingDate": null,
+    "evidence": [
+      {
+        "id": "inv-unknown-008-source",
+        "title": "BR-008 · invoice",
+        "excerpt": "SIMULATED INVOICE — FOR DEMONSTRATION ONLY\nSupplier: Blue Ridge Advisory\nSupplier ID: sup-unknown\nInvoice number: BR-008\nIssue date: 2026-10-10\nDue date: October 30, 2026\nTerms: Full payment due October 30, 2026.\nSubtotal: GBP 249.17\nVAT: GBP 49.83\nTotal: GBP 299.00\nCurrency: GBP\nBank reference: SIM-BANK-UNVERIFIED-009\nThese references are fictional identifiers, not bank account details.",
+        "source": "invoice"
+      },
+      {
+        "id": "inv-unknown-008-P01",
+        "title": "P01 · payment policy",
+        "excerpt": "Only approved suppliers and their exact approved banking reference may be paid. Changed details require independent verification.",
+        "source": "policy"
+      },
+      {
+        "id": "inv-unknown-008-P02",
+        "title": "P02 · payment policy",
+        "excerpt": "Require an unambiguous valid invoice, GBP, positive integer-pence total, matching source arithmetic and explicit payment terms.",
+        "source": "policy"
+      },
+      {
+        "id": "inv-unknown-008-P03",
+        "title": "P03 · payment policy",
+        "excerpt": "Pay each canonical supplier and normalized invoice number once; retain the first batch occurrence and hold subsequent copies.",
+        "source": "policy"
+      },
+      {
+        "id": "inv-unknown-008-P04",
+        "title": "P04 · payment policy",
+        "excerpt": "Hold open disputes and conflicts with the signed contract; an invoice cannot override the supplier agreement.",
+        "source": "policy"
+      },
+      {
+        "id": "inv-unknown-008-P05",
+        "title": "P05 · payment policy",
+        "excerpt": "Automatic approval is limited to £1,000 gross. Larger invoices require a person; invoices above £2,500 gross are held. Configured limits may only tighten these ceilings.",
+        "source": "policy"
+      },
+      {
+        "id": "inv-unknown-008-P09",
+        "title": "P09 · payment policy",
+        "excerpt": "Use an agreed early discount only if its deadline, funding lead time and settlement time can still be met. Otherwise use the ordinary due date.",
+        "source": "policy"
+      },
+      {
+        "id": "inv-unknown-008-P08",
+        "title": "P08 · payment policy",
+        "excerpt": "For ordinary terms, send on the latest safe date allowing the configured number of working settlement days before the due date.",
+        "source": "policy"
+      },
+      {
+        "id": "inv-unknown-008-P10",
+        "title": "P10 · payment policy",
+        "excerpt": "Initiate funding only when its funding date is due, after approval and revalidation. Hold overdue or missed ordinary funding windows.",
+        "source": "policy"
+      },
+      {
+        "id": "inv-unknown-008-P07",
+        "title": "P07 · payment policy",
+        "excerpt": "Manual mode requires explicit human approval of every eligible invoice. Automatic mode may approve only within the automatic limit.",
+        "source": "policy"
+      }
+    ],
+    "checks": [
+      {
+        "label": "Approved supplier",
+        "passed": false,
+        "detail": "Unknown supplier: complete onboarding before payment."
+      },
+      {
+        "label": "Approved bank reference",
+        "passed": false,
+        "detail": "Banking reference differs from the approved record or is unverified. Suspicious change; independently verify it before payment."
+      },
+      {
+        "label": "Supported currency",
+        "passed": true,
+        "detail": "GBP supported."
+      },
+      {
+        "label": "Invoice amount",
+        "passed": true,
+        "detail": "Positive integer-pence total; available source totals reconcile."
+      },
+      {
+        "label": "Unique invoice",
+        "passed": true,
+        "detail": "No earlier batch occurrence with this supplier and invoice number."
+      },
+      {
+        "label": "No open dispute",
+        "passed": true,
+        "detail": "No recorded open dispute."
+      },
+      {
+        "label": "Contract terms",
+        "passed": false,
+        "detail": "Approved contract has no recognized explicit payment deadline. Review and normalize its terms before scheduling."
+      },
+      {
+        "label": "Policy settings",
+        "passed": true,
+        "detail": "Scheduling and approval settings are valid."
+      },
+      {
+        "label": "Hard payment limit",
+        "passed": true,
+        "detail": "Within the gross payment ceiling."
+      },
+      {
+        "label": "Explicit payment dates",
+        "passed": true,
+        "detail": "Issue and due dates are explicit and ordered."
+      },
+      {
+        "label": "Discount terms",
+        "passed": true,
+        "detail": "Discount fields are valid or no discount is claimed."
+      },
+      {
+        "label": "Funding window",
+        "passed": true,
+        "detail": "Fund on 2026-10-26; send on 2026-10-28; arrive by 2026-10-30."
+      }
+    ],
+    "requiresApproval": true
+  },
+  {
+    "invoiceId": "inv-cedar-721",
+    "status": "blocked",
+    "reason": "DSP-014: two event crates missing; £240 credit note requested, not yet issued.",
+    "ruleIds": [
+      "P01",
+      "P02",
+      "P03",
+      "P04",
+      "P05",
+      "P09",
+      "P08",
+      "P10",
+      "P07"
+    ],
+    "grossPence": 64800,
+    "discountPence": 0,
+    "netPence": 64800,
+    "sendDate": null,
+    "arrivalDate": null,
+    "fundingDate": null,
+    "evidence": [
+      {
+        "id": "inv-cedar-721-source",
+        "title": "CL-721 · invoice",
+        "excerpt": "SIMULATED INVOICE — FOR DEMONSTRATION ONLY\nSupplier: Cedar Logistics\nSupplier ID: sup-logistics\nInvoice number: CL-721\nIssue date: 2026-10-12\nDue date: 28/10/2026\nTerms: Payment due 28 October 2026, subject to delivery acceptance.\nSubtotal: GBP 540.00\nVAT: GBP 108.00\nTotal: GBP 648.00\nCurrency: GBP\nBank reference: SIM-BANK-CEDAR-004\nThese references are fictional identifiers, not bank account details.",
+        "source": "invoice"
+      },
+      {
+        "id": "inv-cedar-721-contract",
+        "title": "CTR-CEDAR-2026",
+        "excerpt": "SIMULATED CONTRACT — CTR-CEDAR-2026\nApproved supplier: Cedar Logistics\nApproved bank reference: SIM-BANK-CEDAR-004\nPayment deadline: 2026-10-28\nPayment is withheld while a delivery dispute is open.",
+        "source": "contract"
+      },
+      {
+        "id": "inv-cedar-721-history",
+        "title": "Cedar Logistics · relationship history",
+        "excerpt": "2026-10-12: Delivery arrived with two crates missing.\n2026-10-14: Operations opened DSP-014; supplier acknowledgement received, resolution pending.\nDSP-014: two event crates missing; £240 credit note requested, not yet issued.",
+        "source": "history"
+      },
+      {
+        "id": "inv-cedar-721-P01",
+        "title": "P01 · payment policy",
+        "excerpt": "Only approved suppliers and their exact approved banking reference may be paid. Changed details require independent verification.",
+        "source": "policy"
+      },
+      {
+        "id": "inv-cedar-721-P02",
+        "title": "P02 · payment policy",
+        "excerpt": "Require an unambiguous valid invoice, GBP, positive integer-pence total, matching source arithmetic and explicit payment terms.",
+        "source": "policy"
+      },
+      {
+        "id": "inv-cedar-721-P03",
+        "title": "P03 · payment policy",
+        "excerpt": "Pay each canonical supplier and normalized invoice number once; retain the first batch occurrence and hold subsequent copies.",
+        "source": "policy"
+      },
+      {
+        "id": "inv-cedar-721-P04",
+        "title": "P04 · payment policy",
+        "excerpt": "Hold open disputes and conflicts with the signed contract; an invoice cannot override the supplier agreement.",
+        "source": "policy"
+      },
+      {
+        "id": "inv-cedar-721-P05",
+        "title": "P05 · payment policy",
+        "excerpt": "Automatic approval is limited to £1,000 gross. Larger invoices require a person; invoices above £2,500 gross are held. Configured limits may only tighten these ceilings.",
+        "source": "policy"
+      },
+      {
+        "id": "inv-cedar-721-P09",
+        "title": "P09 · payment policy",
+        "excerpt": "Use an agreed early discount only if its deadline, funding lead time and settlement time can still be met. Otherwise use the ordinary due date.",
+        "source": "policy"
+      },
+      {
+        "id": "inv-cedar-721-P08",
+        "title": "P08 · payment policy",
+        "excerpt": "For ordinary terms, send on the latest safe date allowing the configured number of working settlement days before the due date.",
+        "source": "policy"
+      },
+      {
+        "id": "inv-cedar-721-P10",
+        "title": "P10 · payment policy",
+        "excerpt": "Initiate funding only when its funding date is due, after approval and revalidation. Hold overdue or missed ordinary funding windows.",
+        "source": "policy"
+      },
+      {
+        "id": "inv-cedar-721-P07",
+        "title": "P07 · payment policy",
+        "excerpt": "Manual mode requires explicit human approval of every eligible invoice. Automatic mode may approve only within the automatic limit.",
+        "source": "policy"
+      }
+    ],
+    "checks": [
+      {
+        "label": "Approved supplier",
+        "passed": true,
+        "detail": "Cedar Logistics is approved."
+      },
+      {
+        "label": "Approved bank reference",
+        "passed": true,
+        "detail": "Invoice matches the approved banking reference."
+      },
+      {
+        "label": "Supported currency",
+        "passed": true,
+        "detail": "GBP supported."
+      },
+      {
+        "label": "Invoice amount",
+        "passed": true,
+        "detail": "Positive integer-pence total; available source totals reconcile."
+      },
+      {
+        "label": "Unique invoice",
+        "passed": true,
+        "detail": "No earlier batch occurrence with this supplier and invoice number."
+      },
+      {
+        "label": "No open dispute",
+        "passed": false,
+        "detail": "DSP-014: two event crates missing; £240 credit note requested, not yet issued."
+      },
+      {
+        "label": "Contract terms",
+        "passed": true,
+        "detail": "Recognized explicit contract dates and claimed discounts agree."
+      },
+      {
+        "label": "Policy settings",
+        "passed": true,
+        "detail": "Scheduling and approval settings are valid."
+      },
+      {
+        "label": "Hard payment limit",
+        "passed": true,
+        "detail": "Within the gross payment ceiling."
+      },
+      {
+        "label": "Explicit payment dates",
+        "passed": true,
+        "detail": "Issue and due dates are explicit and ordered."
+      },
+      {
+        "label": "Discount terms",
+        "passed": true,
+        "detail": "Discount fields are valid or no discount is claimed."
+      },
+      {
+        "label": "Funding window",
+        "passed": true,
+        "detail": "Fund on 2026-10-22; send on 2026-10-26; arrive by 2026-10-28."
+      }
+    ],
+    "requiresApproval": true
+  },
+  {
+    "invoiceId": "inv-foundry-441",
+    "status": "eligible",
+    "reason": "Schedule full payment on the latest safe date. Human approval required.",
+    "ruleIds": [
+      "P01",
+      "P02",
+      "P03",
+      "P04",
+      "P05",
+      "P09",
+      "P08",
+      "P10",
+      "P07"
+    ],
+    "grossPence": 184000,
+    "discountPence": 0,
+    "netPence": 184000,
+    "sendDate": "2026-11-03",
+    "arrivalDate": "2026-11-05",
+    "fundingDate": "2026-10-30",
+    "evidence": [
+      {
+        "id": "inv-foundry-441-source",
+        "title": "FE-441 · invoice",
+        "excerpt": "SIMULATED INVOICE — FOR DEMONSTRATION ONLY\nSupplier: Foundry Events\nSupplier ID: sup-venue\nInvoice number: FE-441\nIssue date: 2026-10-13\nDue date: 5 November 2026\nTerms: Full amount due 5 November 2026. No discount.\nSubtotal: GBP 1533.33\nVAT: GBP 306.67\nTotal: GBP 1840.00\nCurrency: GBP\nBank reference: SIM-BANK-FOUNDRY-005\nThese references are fictional identifiers, not bank account details.",
+        "source": "invoice"
+      },
+      {
+        "id": "inv-foundry-441-contract",
+        "title": "CTR-FOUNDRY-2026",
+        "excerpt": "SIMULATED CONTRACT — CTR-FOUNDRY-2026\nApproved supplier: Foundry Events\nApproved bank reference: SIM-BANK-FOUNDRY-005\nPayment deadline: 2026-11-05\nNo early-payment discount. Venue services accepted.",
+        "source": "contract"
+      },
+      {
+        "id": "inv-foundry-441-history",
+        "title": "Foundry Events · relationship history",
+        "excerpt": "2026-10-09: Event completed and signed off.\n2026-10-13: £1,840 invoice reconciled to purchase order PO-441.",
+        "source": "history"
+      },
+      {
+        "id": "inv-foundry-441-P01",
+        "title": "P01 · payment policy",
+        "excerpt": "Only approved suppliers and their exact approved banking reference may be paid. Changed details require independent verification.",
+        "source": "policy"
+      },
+      {
+        "id": "inv-foundry-441-P02",
+        "title": "P02 · payment policy",
+        "excerpt": "Require an unambiguous valid invoice, GBP, positive integer-pence total, matching source arithmetic and explicit payment terms.",
+        "source": "policy"
+      },
+      {
+        "id": "inv-foundry-441-P03",
+        "title": "P03 · payment policy",
+        "excerpt": "Pay each canonical supplier and normalized invoice number once; retain the first batch occurrence and hold subsequent copies.",
+        "source": "policy"
+      },
+      {
+        "id": "inv-foundry-441-P04",
+        "title": "P04 · payment policy",
+        "excerpt": "Hold open disputes and conflicts with the signed contract; an invoice cannot override the supplier agreement.",
+        "source": "policy"
+      },
+      {
+        "id": "inv-foundry-441-P05",
+        "title": "P05 · payment policy",
+        "excerpt": "Automatic approval is limited to £1,000 gross. Larger invoices require a person; invoices above £2,500 gross are held. Configured limits may only tighten these ceilings.",
+        "source": "policy"
+      },
+      {
+        "id": "inv-foundry-441-P09",
+        "title": "P09 · payment policy",
+        "excerpt": "Use an agreed early discount only if its deadline, funding lead time and settlement time can still be met. Otherwise use the ordinary due date.",
+        "source": "policy"
+      },
+      {
+        "id": "inv-foundry-441-P08",
+        "title": "P08 · payment policy",
+        "excerpt": "For ordinary terms, send on the latest safe date allowing the configured number of working settlement days before the due date.",
+        "source": "policy"
+      },
+      {
+        "id": "inv-foundry-441-P10",
+        "title": "P10 · payment policy",
+        "excerpt": "Initiate funding only when its funding date is due, after approval and revalidation. Hold overdue or missed ordinary funding windows.",
+        "source": "policy"
+      },
+      {
+        "id": "inv-foundry-441-P07",
+        "title": "P07 · payment policy",
+        "excerpt": "Manual mode requires explicit human approval of every eligible invoice. Automatic mode may approve only within the automatic limit.",
+        "source": "policy"
+      }
+    ],
+    "checks": [
+      {
+        "label": "Approved supplier",
+        "passed": true,
+        "detail": "Foundry Events is approved."
+      },
+      {
+        "label": "Approved bank reference",
+        "passed": true,
+        "detail": "Invoice matches the approved banking reference."
+      },
+      {
+        "label": "Supported currency",
+        "passed": true,
+        "detail": "GBP supported."
+      },
+      {
+        "label": "Invoice amount",
+        "passed": true,
+        "detail": "Positive integer-pence total; available source totals reconcile."
+      },
+      {
+        "label": "Unique invoice",
+        "passed": true,
+        "detail": "No earlier batch occurrence with this supplier and invoice number."
+      },
+      {
+        "label": "No open dispute",
+        "passed": true,
+        "detail": "No recorded open dispute."
+      },
+      {
+        "label": "Contract terms",
+        "passed": true,
+        "detail": "Recognized explicit contract dates and claimed discounts agree."
+      },
+      {
+        "label": "Policy settings",
+        "passed": true,
+        "detail": "Scheduling and approval settings are valid."
+      },
+      {
+        "label": "Hard payment limit",
+        "passed": true,
+        "detail": "Within the gross payment ceiling."
+      },
+      {
+        "label": "Explicit payment dates",
+        "passed": true,
+        "detail": "Issue and due dates are explicit and ordered."
+      },
+      {
+        "label": "Discount terms",
+        "passed": true,
+        "detail": "Discount fields are valid or no discount is claimed."
+      },
+      {
+        "label": "Funding window",
+        "passed": true,
+        "detail": "Fund on 2026-10-30; send on 2026-11-03; arrive by 2026-11-05."
+      }
+    ],
+    "requiresApproval": true
+  },
+  {
+    "invoiceId": "inv-moss-019",
+    "status": "review",
+    "reason": "Approved contract has no recognized explicit payment deadline. Review and normalize its terms before scheduling. Missing, ambiguous or invalid payment date; obtain explicit terms before scheduling.",
+    "ruleIds": [
+      "P01",
+      "P02",
+      "P03",
+      "P04",
+      "P05",
+      "P09",
+      "P07"
+    ],
+    "grossPence": 52500,
+    "discountPence": 0,
+    "netPence": 52500,
+    "sendDate": null,
+    "arrivalDate": null,
+    "fundingDate": null,
+    "evidence": [
+      {
+        "id": "inv-moss-019-source",
+        "title": "MR-019 · invoice",
+        "excerpt": "SIMULATED INVOICE — FOR DEMONSTRATION ONLY\nSupplier: Moss Research\nSupplier ID: sup-research\nInvoice number: MR-019\nIssue date: 2026-10-14\nDue date: 11/12 (year unspecified)\nTerms: Pay next month, 11/12. Please confirm exact due date.\nSubtotal: GBP 437.50\nVAT: GBP 87.50\nTotal: GBP 525.00\nCurrency: GBP\nBank reference: SIM-BANK-MOSS-006\nThese references are fictional identifiers, not bank account details.",
+        "source": "invoice"
+      },
+      {
+        "id": "inv-moss-019-contract",
+        "title": "CTR-MOSS-2026",
+        "excerpt": "SIMULATED CONTRACT — CTR-MOSS-2026\nApproved supplier: Moss Research\nApproved bank reference: SIM-BANK-MOSS-006\nPayment terms: the parties must agree an explicit due date. No default net terms or early-payment discount apply.",
+        "source": "contract"
+      },
+      {
+        "id": "inv-moss-019-history",
+        "title": "Moss Research · relationship history",
+        "excerpt": "2026-10-14: Research deliverables accepted.\n2026-10-15: Finance asked supplier to clarify the date notation “11/12” and whether payment terms run from issue or acceptance.",
+        "source": "history"
+      },
+      {
+        "id": "inv-moss-019-P01",
+        "title": "P01 · payment policy",
+        "excerpt": "Only approved suppliers and their exact approved banking reference may be paid. Changed details require independent verification.",
+        "source": "policy"
+      },
+      {
+        "id": "inv-moss-019-P02",
+        "title": "P02 · payment policy",
+        "excerpt": "Require an unambiguous valid invoice, GBP, positive integer-pence total, matching source arithmetic and explicit payment terms.",
+        "source": "policy"
+      },
+      {
+        "id": "inv-moss-019-P03",
+        "title": "P03 · payment policy",
+        "excerpt": "Pay each canonical supplier and normalized invoice number once; retain the first batch occurrence and hold subsequent copies.",
+        "source": "policy"
+      },
+      {
+        "id": "inv-moss-019-P04",
+        "title": "P04 · payment policy",
+        "excerpt": "Hold open disputes and conflicts with the signed contract; an invoice cannot override the supplier agreement.",
+        "source": "policy"
+      },
+      {
+        "id": "inv-moss-019-P05",
+        "title": "P05 · payment policy",
+        "excerpt": "Automatic approval is limited to £1,000 gross. Larger invoices require a person; invoices above £2,500 gross are held. Configured limits may only tighten these ceilings.",
+        "source": "policy"
+      },
+      {
+        "id": "inv-moss-019-P09",
+        "title": "P09 · payment policy",
+        "excerpt": "Use an agreed early discount only if its deadline, funding lead time and settlement time can still be met. Otherwise use the ordinary due date.",
+        "source": "policy"
+      },
+      {
+        "id": "inv-moss-019-P07",
+        "title": "P07 · payment policy",
+        "excerpt": "Manual mode requires explicit human approval of every eligible invoice. Automatic mode may approve only within the automatic limit.",
+        "source": "policy"
+      }
+    ],
+    "checks": [
+      {
+        "label": "Approved supplier",
+        "passed": true,
+        "detail": "Moss Research is approved."
+      },
+      {
+        "label": "Approved bank reference",
+        "passed": true,
+        "detail": "Invoice matches the approved banking reference."
+      },
+      {
+        "label": "Supported currency",
+        "passed": true,
+        "detail": "GBP supported."
+      },
+      {
+        "label": "Invoice amount",
+        "passed": true,
+        "detail": "Positive integer-pence total; available source totals reconcile."
+      },
+      {
+        "label": "Unique invoice",
+        "passed": true,
+        "detail": "No earlier batch occurrence with this supplier and invoice number."
+      },
+      {
+        "label": "No open dispute",
+        "passed": true,
+        "detail": "No recorded open dispute."
+      },
+      {
+        "label": "Contract terms",
+        "passed": false,
+        "detail": "Approved contract has no recognized explicit payment deadline. Review and normalize its terms before scheduling."
+      },
+      {
+        "label": "Policy settings",
+        "passed": true,
+        "detail": "Scheduling and approval settings are valid."
+      },
+      {
+        "label": "Hard payment limit",
+        "passed": true,
+        "detail": "Within the gross payment ceiling."
+      },
+      {
+        "label": "Explicit payment dates",
+        "passed": false,
+        "detail": "Missing, ambiguous or invalid payment date; obtain explicit terms before scheduling."
+      },
+      {
+        "label": "Discount terms",
+        "passed": true,
+        "detail": "Discount fields are valid or no discount is claimed."
+      }
+    ],
+    "requiresApproval": true
+  }
+]

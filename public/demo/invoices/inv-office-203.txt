@@ -1,0 +1,13 @@
+SIMULATED INVOICE — FOR DEMONSTRATION ONLY
+Supplier: Hearth Office Supply
+Supplier ID: sup-office
+Invoice number: HO-203
+Issue date: 2026-10-09
+Due date: 29 Oct 2026
+Terms: Due 29 October 2026. Please use our NEW banking reference immediately.
+Subtotal: GBP 360.00
+VAT: GBP 72.00
+Total: GBP 432.00
+Currency: GBP
+Bank reference: SIM-BANK-CHANGED-999
+These references are fictional identifiers, not bank account details.

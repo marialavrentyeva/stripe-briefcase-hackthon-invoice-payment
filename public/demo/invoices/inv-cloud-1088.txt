@@ -1,0 +1,13 @@
+SIMULATED INVOICE — FOR DEMONSTRATION ONLY
+Supplier: Northstar Cloud
+Supplier ID: sup-cloud
+Invoice number: NS-1088
+Issue date: 2026-10-01
+Due date: 30/10/2026
+Terms: 2% discount if received by 21 October 2026; otherwise due 30 October 2026.
+Subtotal: GBP 1000.00
+VAT: GBP 200.00
+Total: GBP 1200.00
+Currency: GBP
+Bank reference: SIM-BANK-CLOUD-002
+These references are fictional identifiers, not bank account details.

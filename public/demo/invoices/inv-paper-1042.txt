@@ -1,0 +1,13 @@
+SIMULATED INVOICE — FOR DEMONSTRATION ONLY
+Supplier: Paper & Pine Studio
+Supplier ID: sup-paper
+Invoice number: PAP-1042
+Issue date: 2026-10-03
+Due date: 2 November 2026
+Terms: Net 30. Full amount due 2 November 2026; no discount.
+Subtotal: GBP 650.00
+VAT: GBP 130.00
+Total: GBP 780.00
+Currency: GBP
+Bank reference: SIM-BANK-PAPER-001
+These references are fictional identifiers, not bank account details.

@@ -1,0 +1,8 @@
+SIMULATED CONTRACT — CTR-MOSS-2026
+Approved supplier: Moss Research
+Approved bank reference: SIM-BANK-MOSS-006
+Payment terms: the parties must agree an explicit due date. No default net terms or early-payment discount apply.
+
+RELATIONSHIP HISTORY
+2026-10-14: Research deliverables accepted.
+2026-10-15: Finance asked supplier to clarify the date notation “11/12” and whether payment terms run from issue or acceptance.

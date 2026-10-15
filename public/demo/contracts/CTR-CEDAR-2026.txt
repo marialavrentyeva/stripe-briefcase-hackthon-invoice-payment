@@ -1,0 +1,11 @@
+SIMULATED CONTRACT — CTR-CEDAR-2026
+Approved supplier: Cedar Logistics
+Approved bank reference: SIM-BANK-CEDAR-004
+Payment deadline: 2026-10-28
+Payment is withheld while a delivery dispute is open.
+
+RELATIONSHIP HISTORY
+2026-10-12: Delivery arrived with two crates missing.
+2026-10-14: Operations opened DSP-014; supplier acknowledgement received, resolution pending.
+OPEN DISPUTE
+DSP-014: two event crates missing; £240 credit note requested, not yet issued.

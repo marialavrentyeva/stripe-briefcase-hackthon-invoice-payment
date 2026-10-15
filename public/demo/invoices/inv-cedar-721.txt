@@ -1,0 +1,13 @@
+SIMULATED INVOICE — FOR DEMONSTRATION ONLY
+Supplier: Cedar Logistics
+Supplier ID: sup-logistics
+Invoice number: CL-721
+Issue date: 2026-10-12
+Due date: 28/10/2026
+Terms: Payment due 28 October 2026, subject to delivery acceptance.
+Subtotal: GBP 540.00
+VAT: GBP 108.00
+Total: GBP 648.00
+Currency: GBP
+Bank reference: SIM-BANK-CEDAR-004
+These references are fictional identifiers, not bank account details.
