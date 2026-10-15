@@ -1,0 +1,14 @@
+SIMULATED INVOICE — FOR DEMONSTRATION ONLY
+Supplier: Willow Catering
+Supplier ID: sup-willow
+Invoice number: WC-1086
+Issue date: 2026-10-08
+Due date: 2026-11-10
+Terms: 8% discount if received by 28 October 2026; otherwise due 10 November 2026.
+Discount: 8% if received by 2026-10-28. Discount applies to the gross invoice total.
+Subtotal: GBP 1875.00
+VAT: GBP 375.00
+Total: GBP 2250.00
+Currency: GBP
+Bank reference: SIM-BANK-WILLOW-008
+These references are fictional identifiers, not bank account details.

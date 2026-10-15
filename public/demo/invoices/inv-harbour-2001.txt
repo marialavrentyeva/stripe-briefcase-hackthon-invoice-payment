@@ -1,0 +1,13 @@
+SIMULATED INVOICE — FOR DEMONSTRATION ONLY
+Supplier: Harbour Printworks
+Supplier ID: sup-harbour
+Invoice number: HP-2001
+Issue date: 2026-10-08
+Due date: 2026-10-21
+Terms: Full payment due 2026-10-21; no early-payment discount.
+Subtotal: GBP 750.00
+VAT: GBP 150.00
+Total: GBP 900.00
+Currency: GBP
+Bank reference: SIM-BANK-HARBOUR-CAL
+These references are fictional identifiers, not bank account details.

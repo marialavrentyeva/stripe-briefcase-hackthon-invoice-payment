@@ -1,0 +1,242 @@
+[
+  {
+    "id": "sup-lumen",
+    "name": "Lumen Production",
+    "initials": "LP",
+    "category": "Event production",
+    "approved": true,
+    "bankReference": "SIM-BANK-LUMEN-007",
+    "terms": "10% discount if received by 26 October 2026; otherwise due 5 November 2026.",
+    "contractId": "CTR-LUMEN-2026",
+    "contractText": "SIMULATED CONTRACT — CTR-LUMEN-2026\nApproved supplier: Lumen Production\nApproved bank reference: SIM-BANK-LUMEN-007\nDiscount: 10% if received by 2026-10-26.\nPayment deadline: 2026-11-05\nThe early-payment discount applies to the gross invoice total. Production services accepted. No open dispute.",
+    "history": [
+      "2026-10-02: Event production delivered and accepted against PO-512.",
+      "2026-10-05: £2,400.00 invoice LP-1052 received; agreed 10% early-payment offer confirmed. Invoice remains unpaid."
+    ]
+  },
+  {
+    "id": "sup-willow",
+    "name": "Willow Catering",
+    "initials": "WC",
+    "category": "Catering",
+    "approved": true,
+    "bankReference": "SIM-BANK-WILLOW-008",
+    "terms": "8% discount if received by 28 October 2026; otherwise due 10 November 2026.",
+    "contractId": "CTR-WILLOW-2026",
+    "contractText": "SIMULATED CONTRACT — CTR-WILLOW-2026\nApproved supplier: Willow Catering\nApproved bank reference: SIM-BANK-WILLOW-008\nDiscount: 8% if received by 2026-10-28.\nPayment deadline: 2026-11-10\nThe early-payment discount applies to the gross invoice total. Catering services accepted. No open dispute.",
+    "history": [
+      "2026-10-07: Catering delivery accepted against PO-518.",
+      "2026-10-08: £2,250.00 invoice WC-1086 reconciled; agreed 8% early-payment offer confirmed. Invoice remains unpaid."
+    ]
+  },
+  {
+    "id": "sup-atlas",
+    "name": "Atlas Workshop",
+    "initials": "AW",
+    "category": "Exhibition fabrication",
+    "approved": true,
+    "bankReference": "SIM-BANK-ATLAS-010",
+    "terms": "5% discount if received by 2 November 2026; otherwise due 12 November 2026.",
+    "contractId": "CTR-ATLAS-2026",
+    "contractText": "SIMULATED CONTRACT — CTR-ATLAS-2026\nApproved supplier: Atlas Workshop\nApproved bank reference: SIM-BANK-ATLAS-010\nDiscount: 5% if received by 2026-11-02.\nPayment deadline: 2026-11-12\nThe early-payment discount applies to the gross invoice total. Exhibition fabrication accepted. No open dispute.",
+    "history": [
+      "2026-10-09: Exhibition fabrication delivered and accepted against PO-524.",
+      "2026-10-12: £2,400.00 invoice AW-1124 reconciled; agreed 5% early-payment offer confirmed. Invoice remains unpaid."
+    ]
+  },
+  {
+    "id": "sup-harbour",
+    "name": "Harbour Printworks",
+    "initials": "HP",
+    "category": "Print materials",
+    "approved": true,
+    "bankReference": "SIM-BANK-HARBOUR-CAL",
+    "terms": "Full payment due 2026-10-21; no early-payment discount.",
+    "contractId": "CTR-HARBOUR-2026",
+    "contractText": "SIMULATED CONTRACT — CTR-HARBOUR-2026\nApproved supplier: Harbour Printworks\nApproved bank reference: SIM-BANK-HARBOUR-CAL\nPayment deadline: 2026-10-21\nNo early-payment discount. Services delivered and accepted. No open dispute.",
+    "history": [
+      "2026-10-08: Print materials delivered and approved. Invoice matched to purchase order; no disputes.",
+      "2026-10-12: Invoice received; approved bank reference independently checked."
+    ]
+  },
+  {
+    "id": "sup-juniper",
+    "name": "Juniper IT Support",
+    "initials": "JI",
+    "category": "IT support",
+    "approved": true,
+    "bankReference": "SIM-BANK-JUNIPER-CAL",
+    "terms": "Full payment due 2026-10-22; no early-payment discount.",
+    "contractId": "CTR-JUNIPER-2026",
+    "contractText": "SIMULATED CONTRACT — CTR-JUNIPER-2026\nApproved supplier: Juniper IT Support\nApproved bank reference: SIM-BANK-JUNIPER-CAL\nPayment deadline: 2026-10-22\nNo early-payment discount. Services delivered and accepted. No open dispute.",
+    "history": [
+      "2026-10-08: IT support delivered and approved. Invoice matched to purchase order; no disputes.",
+      "2026-10-12: Invoice received; approved bank reference independently checked."
+    ]
+  },
+  {
+    "id": "sup-oak",
+    "name": "Oak Facilities",
+    "initials": "OF",
+    "category": "Facilities",
+    "approved": true,
+    "bankReference": "SIM-BANK-OAK-CAL",
+    "terms": "Full payment due 2026-10-23; no early-payment discount.",
+    "contractId": "CTR-OAK-2026",
+    "contractText": "SIMULATED CONTRACT — CTR-OAK-2026\nApproved supplier: Oak Facilities\nApproved bank reference: SIM-BANK-OAK-CAL\nPayment deadline: 2026-10-23\nNo early-payment discount. Services delivered and accepted. No open dispute.",
+    "history": [
+      "2026-10-08: Facilities delivered and approved. Invoice matched to purchase order; no disputes.",
+      "2026-10-12: Invoice received; approved bank reference independently checked."
+    ]
+  },
+  {
+    "id": "sup-linen",
+    "name": "Linen Hire Co",
+    "initials": "LH",
+    "category": "Event linen",
+    "approved": true,
+    "bankReference": "SIM-BANK-LINEN-CAL",
+    "terms": "Full payment due 2026-10-26; no early-payment discount.",
+    "contractId": "CTR-LINEN-2026",
+    "contractText": "SIMULATED CONTRACT — CTR-LINEN-2026\nApproved supplier: Linen Hire Co\nApproved bank reference: SIM-BANK-LINEN-CAL\nPayment deadline: 2026-10-26\nNo early-payment discount. Services delivered and accepted. No open dispute.",
+    "history": [
+      "2026-10-08: Event linen delivered and approved. Invoice matched to purchase order; no disputes.",
+      "2026-10-12: Invoice received; approved bank reference independently checked."
+    ]
+  },
+  {
+    "id": "sup-beacon",
+    "name": "Beacon Security",
+    "initials": "BS",
+    "category": "Event security",
+    "approved": true,
+    "bankReference": "SIM-BANK-BEACON-CAL",
+    "terms": "Full payment due 2026-10-27; no early-payment discount.",
+    "contractId": "CTR-BEACON-2026",
+    "contractText": "SIMULATED CONTRACT — CTR-BEACON-2026\nApproved supplier: Beacon Security\nApproved bank reference: SIM-BANK-BEACON-CAL\nPayment deadline: 2026-10-27\nNo early-payment discount. Services delivered and accepted. No open dispute.",
+    "history": [
+      "2026-10-08: Event security delivered and approved. Invoice matched to purchase order; no disputes.",
+      "2026-10-12: Invoice received; approved bank reference independently checked."
+    ]
+  },
+  {
+    "id": "sup-clover",
+    "name": "Clover Cleaning",
+    "initials": "CC",
+    "category": "Cleaning",
+    "approved": true,
+    "bankReference": "SIM-BANK-CLOVER-CAL",
+    "terms": "Full payment due 2026-10-28; no early-payment discount.",
+    "contractId": "CTR-CLOVER-2026",
+    "contractText": "SIMULATED CONTRACT — CTR-CLOVER-2026\nApproved supplier: Clover Cleaning\nApproved bank reference: SIM-BANK-CLOVER-CAL\nPayment deadline: 2026-10-28\nNo early-payment discount. Services delivered and accepted. No open dispute.",
+    "history": [
+      "2026-10-08: Cleaning delivered and approved. Invoice matched to purchase order; no disputes.",
+      "2026-10-12: Invoice received; approved bank reference independently checked."
+    ]
+  },
+  {
+    "id": "sup-relay",
+    "name": "Relay Couriers",
+    "initials": "RC",
+    "category": "Courier services",
+    "approved": true,
+    "bankReference": "SIM-BANK-RELAY-CAL",
+    "terms": "Full payment due 2026-10-29; no early-payment discount.",
+    "contractId": "CTR-RELAY-2026",
+    "contractText": "SIMULATED CONTRACT — CTR-RELAY-2026\nApproved supplier: Relay Couriers\nApproved bank reference: SIM-BANK-RELAY-CAL\nPayment deadline: 2026-10-29\nNo early-payment discount. Services delivered and accepted. No open dispute.",
+    "history": [
+      "2026-10-08: Courier services delivered and approved. Invoice matched to purchase order; no disputes.",
+      "2026-10-12: Invoice received; approved bank reference independently checked."
+    ]
+  },
+  {
+    "id": "sup-studio",
+    "name": "Studio Audio",
+    "initials": "SA",
+    "category": "Audio equipment",
+    "approved": true,
+    "bankReference": "SIM-BANK-STUDIO-CAL",
+    "terms": "Full payment due 2026-10-30; no early-payment discount.",
+    "contractId": "CTR-STUDIO-2026",
+    "contractText": "SIMULATED CONTRACT — CTR-STUDIO-2026\nApproved supplier: Studio Audio\nApproved bank reference: SIM-BANK-STUDIO-CAL\nPayment deadline: 2026-10-30\nNo early-payment discount. Services delivered and accepted. No open dispute.",
+    "history": [
+      "2026-10-08: Audio equipment delivered and approved. Invoice matched to purchase order; no disputes.",
+      "2026-10-12: Invoice received; approved bank reference independently checked."
+    ]
+  },
+  {
+    "id": "sup-maple",
+    "name": "Maple Furniture Hire",
+    "initials": "MF",
+    "category": "Furniture hire",
+    "approved": true,
+    "bankReference": "SIM-BANK-MAPLE-CAL",
+    "terms": "Full payment due 2026-11-03; no early-payment discount.",
+    "contractId": "CTR-MAPLE-2026",
+    "contractText": "SIMULATED CONTRACT — CTR-MAPLE-2026\nApproved supplier: Maple Furniture Hire\nApproved bank reference: SIM-BANK-MAPLE-CAL\nPayment deadline: 2026-11-03\nNo early-payment discount. Services delivered and accepted. No open dispute.",
+    "history": [
+      "2026-10-08: Furniture hire delivered and approved. Invoice matched to purchase order; no disputes.",
+      "2026-10-12: Invoice received; approved bank reference independently checked."
+    ]
+  },
+  {
+    "id": "sup-clear",
+    "name": "Clear Window Services",
+    "initials": "CW",
+    "category": "Maintenance",
+    "approved": true,
+    "bankReference": "SIM-BANK-CLEAR-CAL",
+    "terms": "Full payment due 2026-11-04; no early-payment discount.",
+    "contractId": "CTR-CLEAR-2026",
+    "contractText": "SIMULATED CONTRACT — CTR-CLEAR-2026\nApproved supplier: Clear Window Services\nApproved bank reference: SIM-BANK-CLEAR-CAL\nPayment deadline: 2026-11-04\nNo early-payment discount. Services delivered and accepted. No open dispute.",
+    "history": [
+      "2026-10-08: Maintenance delivered and approved. Invoice matched to purchase order; no disputes.",
+      "2026-10-12: Invoice received; approved bank reference independently checked."
+    ]
+  },
+  {
+    "id": "sup-pixel",
+    "name": "Pixel Design",
+    "initials": "PD",
+    "category": "Design services",
+    "approved": true,
+    "bankReference": "SIM-BANK-PIXEL-CAL",
+    "terms": "Full payment due 2026-11-05; no early-payment discount.",
+    "contractId": "CTR-PIXEL-2026",
+    "contractText": "SIMULATED CONTRACT — CTR-PIXEL-2026\nApproved supplier: Pixel Design\nApproved bank reference: SIM-BANK-PIXEL-CAL\nPayment deadline: 2026-11-05\nNo early-payment discount. Services delivered and accepted. No open dispute.",
+    "history": [
+      "2026-10-08: Design services delivered and approved. Invoice matched to purchase order; no disputes.",
+      "2026-10-12: Invoice received; approved bank reference independently checked."
+    ]
+  },
+  {
+    "id": "sup-silver",
+    "name": "Silver Stage Lighting",
+    "initials": "SL",
+    "category": "Lighting hire",
+    "approved": true,
+    "bankReference": "SIM-BANK-SILVER-CAL",
+    "terms": "Full payment due 2026-11-06; no early-payment discount.",
+    "contractId": "CTR-SILVER-2026",
+    "contractText": "SIMULATED CONTRACT — CTR-SILVER-2026\nApproved supplier: Silver Stage Lighting\nApproved bank reference: SIM-BANK-SILVER-CAL\nPayment deadline: 2026-11-06\nNo early-payment discount. Services delivered and accepted. No open dispute.",
+    "history": [
+      "2026-10-08: Lighting hire delivered and approved. Invoice matched to purchase order; no disputes.",
+      "2026-10-12: Invoice received; approved bank reference independently checked."
+    ]
+  },
+  {
+    "id": "sup-fern",
+    "name": "Fern Plant Hire",
+    "initials": "FP",
+    "category": "Venue styling",
+    "approved": true,
+    "bankReference": "SIM-BANK-FERN-CAL",
+    "terms": "Full payment due 2026-11-09; no early-payment discount.",
+    "contractId": "CTR-FERN-2026",
+    "contractText": "SIMULATED CONTRACT — CTR-FERN-2026\nApproved supplier: Fern Plant Hire\nApproved bank reference: SIM-BANK-FERN-CAL\nPayment deadline: 2026-11-09\nNo early-payment discount. Services delivered and accepted. No open dispute.",
+    "history": [
+      "2026-10-08: Venue styling delivered and approved. Invoice matched to purchase order; no disputes.",
+      "2026-10-12: Invoice received; approved bank reference independently checked."
+    ]
+  }
+]

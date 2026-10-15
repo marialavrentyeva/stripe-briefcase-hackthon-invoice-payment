@@ -7,7 +7,7 @@ import { createHash, randomUUID } from 'node:crypto';
 
 export const DATA_DIR = path.resolve(process.env.DATA_DIR || '.data');
 const storePath = path.join(DATA_DIR, 'state.json');
-export type StoredState = AppState & { runHistory: PaymentRun[]; memoryOutbox: {id:string;text:string}[]; memorySyncPending?: string[] };
+export type StoredState = AppState & { demoPrepared?: boolean; demoArchivedInvoices?: AppState['invoices']; runHistory: PaymentRun[]; memoryOutbox: {id:string;text:string}[]; memorySyncPending?: string[] };
 export const policyVersion = (settings: AppState['settings']) => `v1-${createHash('sha256').update(JSON.stringify(settings)).update(fs.existsSync('docs/POLICY.md') ? fs.readFileSync('docs/POLICY.md','utf8') : 'policy-v1').digest('hex').slice(0, 8)}`;
 export function createRun(state: AppState): PaymentRun {
   const decisions = analyseInvoices(state.invoices, state.suppliers, state.settings);

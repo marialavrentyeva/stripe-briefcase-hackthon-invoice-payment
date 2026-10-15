@@ -1,0 +1,13 @@
+SIMULATED INVOICE — FOR DEMONSTRATION ONLY
+Supplier: Fern Plant Hire
+Supplier ID: sup-fern
+Invoice number: FP-2001
+Issue date: 2026-10-08
+Due date: 2026-11-09
+Terms: Full payment due 2026-11-09; no early-payment discount.
+Subtotal: GBP 950.00
+VAT: GBP 190.00
+Total: GBP 1140.00
+Currency: GBP
+Bank reference: SIM-BANK-FERN-CAL
+These references are fictional identifiers, not bank account details.

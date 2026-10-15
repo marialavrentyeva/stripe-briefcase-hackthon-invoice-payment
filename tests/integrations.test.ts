@@ -152,3 +152,34 @@ test('standalone Stripe destination rejection is a confirmed failure, never fake
   overrides['/v1/payouts'] = () => Response.json({ error: { code: 'resource_missing' } }, { status: 400 });
   await assert.rejects(createTestPayout(funding), error => error instanceof StripeIntegrationError && !error.uncertain);
 });
+
+test('standalone sandbox with incomplete onboarding can use authenticated paid test history for the exact bank', async () => {
+  overrides['/v1/account'] = () => Response.json({ id: 'acct_mock', payouts_enabled: false, details_submitted: false });
+  const paid = { ...payout, object: 'payout', type: 'bank_account', status: 'paid' };
+  overrides['/v1/payouts'] = () => calls.at(-1)?.init?.method === 'POST' ? Response.json(payout) : Response.json({ object: 'list', data: [paid] });
+  const ready = await getStripeStatus();
+  assert.equal(ready.status.connected, true);
+  assert.match(ready.status.message, /previously paid test GBP payout/);
+  assert.ok(calls.every(call => call.init?.method === 'GET'));
+  assert.equal((await createTestPayout(funding)).status, 'pending');
+  const historyCalls = calls.filter(call => call.url.includes('/payouts?'));
+  assert.equal(historyCalls.length, 2); // Recheck attestation immediately before submission.
+  for (const call of historyCalls) {
+    const params = new URL(call.url).searchParams;
+    assert.equal(params.get('destination'), 'ba_mock'); assert.equal(params.get('status'), 'paid');
+    assert.equal((call.init?.headers as Record<string, string>)['Stripe-Account'], undefined);
+  }
+});
+
+test('sandbox readiness rejects missing, untrusted, failed or mismatched payout history without submitting', async () => {
+  overrides['/v1/account'] = () => Response.json({ id: 'acct_mock', payouts_enabled: false });
+  const paid = { ...payout, object: 'payout', type: 'bank_account', status: 'paid' };
+  for (const unsafe of [undefined, { ...paid, livemode: true }, { ...paid, status: 'pending' }, { ...paid, status: 'failed' }, { ...paid, currency: 'usd' }, { ...paid, destination: 'ba_other' }, { ...paid, amount: 0 }, { ...paid, type: 'card' }, { ...paid, id: 'bad' }, { ...paid, reversed_by: 'po_reversal' }, { ...paid, failure_code: 'account_closed' }]) {
+    overrides['/v1/payouts'] = () => Response.json({ object: 'list', data: unsafe ? [unsafe] : [] });
+    await assert.rejects(createTestPayout(funding), /Payouts are not enabled/);
+  }
+  overrides['/v1/payouts'] = () => Response.json({ error: { message: 'private-provider-message' } }, { status: 403 });
+  const blocked = await getStripeStatus();
+  assert.equal(blocked.status.connected, false); assert.ok(!blocked.status.message.includes('private-provider-message'));
+  assert.ok(calls.every(call => call.init?.method === 'GET'));
+});

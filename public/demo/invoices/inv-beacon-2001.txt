@@ -1,0 +1,13 @@
+SIMULATED INVOICE — FOR DEMONSTRATION ONLY
+Supplier: Beacon Security
+Supplier ID: sup-beacon
+Invoice number: BS-2001
+Issue date: 2026-10-08
+Due date: 2026-10-27
+Terms: Full payment due 2026-10-27; no early-payment discount.
+Subtotal: GBP 1450.00
+VAT: GBP 290.00
+Total: GBP 1740.00
+Currency: GBP
+Bank reference: SIM-BANK-BEACON-CAL
+These references are fictional identifiers, not bank account details.

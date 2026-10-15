@@ -29,3 +29,11 @@ All suppliers, invoices, contracts, history and banking references are fictional
 Source documents mix ISO, named-month, UK numeric and US named-month dates. Normalized JSON uses ISO dates only. No date is inferred for the ambiguous invoice.
 
 The duplicate rule retains the first occurrence, so use the full batch to demonstrate the copy being held. Uploading an original invoice already present in the app will create another duplicate; start with an empty invoice list for a clean upload demonstration, or use the built-in reset to restore the seeded eight-row demo.
+
+### Expanded discount scenario
+
+`extra-discount-invoices.json` and `extra-discount-suppliers.json` add three matched supplier contracts and invoices with £540 of additional agreed discounts (£564 including Northstar). `POST /api/demo/expand` idempotently adds them to the local workspace and queues their contracts into Cognee. After cloud indexing, check invoices again to corroborate the new suppliers. Reset restores the original eight-invoice scenario; repeat expansion to restore this scenario.
+
+Home estimates simple interest at 3% a year on each eligible net payment amount for whole calendar days between ingestion and scheduled sending (ACT/365). This is an illustrative opportunity estimate, not actual interest credited by Stripe. The cash graph combines current Stripe and simulated bank balances, deducting future eligible supplier payments; transfers between those accounts do not change combined cash.
+
+The expanded calendar also includes 13 ordinary operating invoices (£15,900 total), bringing the workspace to 24 invoices. There are eligible payments on every business day from 19 October through 5 November. At £50,299 starting combined cash, projected closing cash is £24,093 after £26,206 in eligible payments. The forecast is planned activity, not additional executed Stripe payouts.

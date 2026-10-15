@@ -1,0 +1,14 @@
+SIMULATED INVOICE — FOR DEMONSTRATION ONLY
+Supplier: Atlas Workshop
+Supplier ID: sup-atlas
+Invoice number: AW-1124
+Issue date: 2026-10-12
+Due date: 2026-11-12
+Terms: 5% discount if received by 2 November 2026; otherwise due 12 November 2026.
+Discount: 5% if received by 2026-11-02. Discount applies to the gross invoice total.
+Subtotal: GBP 2000.00
+VAT: GBP 400.00
+Total: GBP 2400.00
+Currency: GBP
+Bank reference: SIM-BANK-ATLAS-010
+These references are fictional identifiers, not bank account details.

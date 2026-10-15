@@ -1,0 +1,13 @@
+SIMULATED INVOICE — FOR DEMONSTRATION ONLY
+Supplier: Clover Cleaning
+Supplier ID: sup-clover
+Invoice number: CC-2001
+Issue date: 2026-10-08
+Due date: 2026-10-28
+Terms: Full payment due 2026-10-28; no early-payment discount.
+Subtotal: GBP 600.00
+VAT: GBP 120.00
+Total: GBP 720.00
+Currency: GBP
+Bank reference: SIM-BANK-CLOVER-CAL
+These references are fictional identifiers, not bank account details.

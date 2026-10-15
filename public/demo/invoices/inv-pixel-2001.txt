@@ -1,0 +1,13 @@
+SIMULATED INVOICE — FOR DEMONSTRATION ONLY
+Supplier: Pixel Design
+Supplier ID: sup-pixel
+Invoice number: PD-2001
+Issue date: 2026-10-08
+Due date: 2026-11-05
+Terms: Full payment due 2026-11-05; no early-payment discount.
+Subtotal: GBP 700.00
+VAT: GBP 140.00
+Total: GBP 840.00
+Currency: GBP
+Bank reference: SIM-BANK-PIXEL-CAL
+These references are fictional identifiers, not bank account details.

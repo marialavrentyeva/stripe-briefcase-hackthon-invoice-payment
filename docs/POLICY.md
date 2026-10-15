@@ -43,3 +43,7 @@ Paper & Pine PAP-1042 has no discount and is due 2 November. Fund on 27 October,
 ## Evidence and execution boundary
 
 Every decision links the invoice text, the matched supplier contract, relationship history and each applied numbered policy clause. The engine schedules instructions; it does not send a supplier bank transfer. A Stripe payout moves funds to the configured business bank destination. The bank-export fixture is explicitly simulated and contains fictional banking references only.
+
+## P11 — Review resolutions
+
+Reviewer holds and duplicate exclusions block payment until restored. Record a reason and before/after history for every review action, preserve original source evidence, and revalidate corrected due dates against the approved contract and all payment rules. Restoring an invoice does not approve it. Review actions clear prior run approvals.

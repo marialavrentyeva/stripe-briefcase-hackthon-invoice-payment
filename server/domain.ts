@@ -12,6 +12,7 @@ export const policyClauses: Record<string, string> = {
   P08: 'For ordinary terms, send on the latest safe date allowing the configured number of working settlement days before the due date.',
   P09: 'Use an agreed early discount only if its deadline, funding lead time and settlement time can still be met. Otherwise use the ordinary due date.',
   P10: 'Initiate funding only when its funding date is due, after approval and revalidation. Hold overdue or missed ordinary funding windows.',
+  P11: 'Reviewer holds and duplicate exclusions block payment until restored. Record a reason and before/after history for every review action, preserve original source evidence, and revalidate corrected due dates against the approved contract and all payment rules.',
 };
 
 function date(value: string | undefined): Date | null {
@@ -49,6 +50,8 @@ export function analyseInvoices(invoices: Invoice[], suppliers: Supplier[], sett
       checks.push({ label, passed, detail }); ruleIds.add(clause);
       if (!passed) { problems.push(detail); if (severity === 'blocked') blocked = true; }
     };
+    if (invoice.reviewState) check('Review resolution', false, invoice.reviewState === 'held' ? 'Invoice is held by a reviewer.' : 'Duplicate invoice was excluded by a reviewer.', 'P11');
+    if (invoice.reviewHistory?.length) ruleIds.add('P11');
     const canonical = Boolean(supplier && normalizeName(supplier.name) === normalizeName(invoice.supplierName));
     check('Approved supplier', Boolean(canonical && supplier?.approved), supplier ? canonical ? supplier.approved ? `${supplier.name} is approved.` : 'Supplier is not approved.' : 'Supplier name does not match its canonical supplier ID.' : 'Unknown supplier: complete onboarding before payment.', 'P01');
     check('Approved bank reference', Boolean(supplier && supplier.bankReference === invoice.bankReference), supplier?.bankReference === invoice.bankReference ? 'Invoice matches the approved banking reference.' : 'Banking reference differs from the approved record or is unverified. Suspicious change; independently verify it before payment.', 'P01');
@@ -98,6 +101,7 @@ export function analyseInvoices(invoices: Invoice[], suppliers: Supplier[], sett
     const requiresApproval = settings.approvalMode === 'manual' || invoice.grossPence > Math.min(100_000, settings.autoApproveLimitPence);
     ruleIds.add('P07');
     const evidence: Evidence[] = [{ id: `${invoice.id}-source`, title: `${invoice.number} · invoice`, excerpt: invoice.sourceText, source: 'invoice' }];
+    for (const [index, entry] of (invoice.reviewHistory ?? []).entries()) evidence.push({ id: `${invoice.id}-review-${index}`, title: `Review: ${entry.action}`, excerpt: JSON.stringify(entry, null, 2), source: 'history' });
     if (supplier) {
       evidence.push({ id: `${invoice.id}-contract`, title: supplier.contractId, excerpt: supplier.contractText, source: 'contract' });
       evidence.push({ id: `${invoice.id}-history`, title: `${supplier.name} · relationship history`, excerpt: [...supplier.history, ...(supplier.dispute ? [supplier.dispute] : [])].join('\n'), source: 'history' });

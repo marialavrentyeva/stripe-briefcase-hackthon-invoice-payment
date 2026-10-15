@@ -1,0 +1,13 @@
+SIMULATED INVOICE — FOR DEMONSTRATION ONLY
+Supplier: Studio Audio
+Supplier ID: sup-studio
+Invoice number: SA-2001
+Issue date: 2026-10-08
+Due date: 2026-10-30
+Terms: Full payment due 2026-10-30; no early-payment discount.
+Subtotal: GBP 1100.00
+VAT: GBP 220.00
+Total: GBP 1320.00
+Currency: GBP
+Bank reference: SIM-BANK-STUDIO-CAL
+These references are fictional identifiers, not bank account details.

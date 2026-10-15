@@ -1,0 +1,13 @@
+SIMULATED INVOICE — FOR DEMONSTRATION ONLY
+Supplier: Oak Facilities
+Supplier ID: sup-oak
+Invoice number: OF-2001
+Issue date: 2026-10-08
+Due date: 2026-10-23
+Terms: Full payment due 2026-10-23; no early-payment discount.
+Subtotal: GBP 900.00
+VAT: GBP 180.00
+Total: GBP 1080.00
+Currency: GBP
+Bank reference: SIM-BANK-OAK-CAL
+These references are fictional identifiers, not bank account details.

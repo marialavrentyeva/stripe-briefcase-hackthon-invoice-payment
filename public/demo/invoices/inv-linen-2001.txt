@@ -1,0 +1,13 @@
+SIMULATED INVOICE — FOR DEMONSTRATION ONLY
+Supplier: Linen Hire Co
+Supplier ID: sup-linen
+Invoice number: LH-2001
+Issue date: 2026-10-08
+Due date: 2026-10-26
+Terms: Full payment due 2026-10-26; no early-payment discount.
+Subtotal: GBP 500.00
+VAT: GBP 100.00
+Total: GBP 600.00
+Currency: GBP
+Bank reference: SIM-BANK-LINEN-CAL
+These references are fictional identifiers, not bank account details.

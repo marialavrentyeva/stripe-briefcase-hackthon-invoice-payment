@@ -6,6 +6,8 @@ import { randomUUID } from 'node:crypto';
 import type { AppState, FundingAttempt, Settings } from '../shared/types';
 import { archiveRun, createRun, initialState, policyVersion, readStore, withLock, writeStore, type StoredState } from './store';
 import { analyseInvoices } from './domain';
+import { extraSuppliers, extraInvoices } from './demo-expansion';
+import { resolveInvoiceReview } from './review';
 import { createTestPayout, getStripeStatus, getStripeDestinations, retrieveTestPayout, StripeIntegrationError } from './stripe';
 import { getCogneeStatus, searchCognee, seedCognee } from './cognee';
 import { fundingPreview, exportRun } from './funding';
@@ -23,7 +25,7 @@ app.use('/api', (req,res,next) => {
   next();
 });
 const route = (fn:(req:Request,res:Response)=>Promise<unknown>) => (req:Request,res:Response,next:NextFunction) => { Promise.resolve(fn(req,res)).catch(next); };
-const publicState = (s:StoredState):AppState => { const {runHistory,memorySyncPending,memoryOutbox,...state} = s; return state; };
+const publicState = (s:StoredState):AppState => { const {runHistory,memorySyncPending,memoryOutbox,demoPrepared,demoArchivedInvoices,...state} = s; return state; };
 function policyDocument(s:StoredState) {
   const policy=fs.existsSync('docs/POLICY.md')?fs.readFileSync('docs/POLICY.md','utf8'):'Briefcase policy v1';
   return {id:s.policyVersion,text:`Policy version ${s.policyVersion}\nEffective settings recorded at ${new Date().toISOString()}\n${policy}\nActual settings: ${JSON.stringify(s.settings)}`};
@@ -97,6 +99,30 @@ app.get('/api/health',(_req,res)=>res.json({ok:true,app:'Briefcase',mode:'local'
 app.get('/api/state',route(async(_req,res)=>withLock(async()=>{ const s=readStore(); await refreshIntegrations(s); writeStore(s); res.json(publicState(s)); })));
 app.get('/api/funding-preview',route(async(_req,res)=>{res.json(fundingPreview(readStore()));}));
 app.get('/api/stripe/destinations',route(async(_req,res)=>{res.json(await getStripeDestinations());}));
+app.post('/api/demo/prepare-recording',route(async(_req,res)=>withLock(async()=>{
+  const s=readStore();if(fundingActive(s)) throw new Error('Reconcile pending funding first.');
+  if(!s.demoPrepared){
+    const removed=['inv-office-203','inv-unknown-008','inv-cedar-721','inv-moss-019'];
+    s.demoArchivedInvoices=s.invoices.filter(i=>removed.includes(i.id));
+    s.invoices=s.invoices.filter(i=>!removed.includes(i.id));
+    const duplicate=s.invoices.find(i=>i.id==='inv-paper-copy');
+    if(duplicate){delete duplicate.reviewState;(duplicate.reviewHistory??=[]).push({action:'restore',note:'Prepared recording scenario: duplicate awaits reviewer decision again; prior history retained.',createdAt:new Date().toISOString()});}
+    s.demoPrepared=true;invalidate(s);await attachMemory(s);writeStore(s);
+  }
+  res.json(publicState(s));
+})));
+app.post('/api/demo/expand',route(async(_req,res)=>withLock(async()=>{
+  const s=readStore(); if(fundingActive(s)) throw new Error('Reconcile pending funding first.');
+  const added=extraSuppliers.filter(x=>!s.suppliers.some(y=>y.id===x.id));
+  s.suppliers.push(...structuredClone(added));
+  s.invoices.push(...structuredClone(extraInvoices.filter(x=>!s.invoices.some(y=>y.id===x.id))));
+  if(added.length) {
+    invalidate(s);
+    for(const supplier of added) queueMemory(s,{id:supplier.contractId,text:`Supplier ID: ${supplier.id}\n${supplier.contractText}\nHistory:\n${supplier.history.join('\n')}\nOpen dispute: None`});
+    writeStore(s); await syncMemoryOutbox(s); await attachMemory(s); writeStore(s);
+  }
+  res.json(publicState(s));
+})));
 app.post('/api/analyse',route(async(_req,res)=>withLock(async()=>{
   const s=readStore(); if(fundingActive(s)) throw new Error('Reconcile pending funding before changing this run.');
   await refreshIntegrations(s); invalidate(s); await attachMemory(s); writeStore(s); res.json(publicState(s));
@@ -149,6 +175,13 @@ app.post('/api/invoices',route(async(req,res)=>withLock(async()=>{
   }
   s.invoices.push(...imported); invalidate(s); await attachMemory(s); writeStore(s); res.json(publicState(s));
 })));
+app.post('/api/invoices/:id/review',route(async(req,res)=>withLock(async()=>{
+  const s=readStore();
+  const entry=resolveInvoiceReview(s,String(req.params.id),req.body);
+  invalidate(s); await attachMemory(s);
+  queueMemory(s,{id:`review_${randomUUID()}`,text:`Invoice review resolution. Original invoice source is retained; contract and policy checks still apply.\nInvoice ID: ${req.params.id}\n${JSON.stringify(entry,null,2)}`});
+  writeStore(s); scheduleMemorySync(); res.json(publicState(s));
+})));
 app.get('/api/export',route(async(_req,res)=>{
   const s=readStore(); if(!s.run?.approvedInvoiceIds.length) throw new Error('Approve at least one eligible invoice before exporting.');
   res.setHeader('Content-Type','text/csv; charset=utf-8'); res.setHeader('Content-Disposition',`attachment; filename="briefcase-${s.run.id}.csv"`);res.send(exportRun(s));
@@ -162,7 +195,7 @@ app.post('/api/fund',route(async(req,res)=>withLock(async()=>{
     if(!check||check.status!=='eligible'||check.netPence!==d.netPence||check.fundingDate!==d.fundingDate) throw new Error('Invoice evidence changed. Analyse and approve the run again.');
   }
   await attachMemory(s);
-  const preview=fundingPreview(s); if(!preview.canFund) { writeStore(s); throw new Error(preview.reason); }
+  const preview=fundingPreview(s); if(req.body.expectedAmountPence !== undefined && req.body.expectedAmountPence !== preview.shortfallPence) throw new Error('Funding amount changed. Review the updated preview before confirming.'); if(!preview.canFund) { writeStore(s); throw new Error(preview.reason); }
   const attempt:FundingAttempt={id:`fund_${randomUUID()}`,runId:s.run.id,amountPence:preview.shortfallPence,currency:'gbp',status:'unknown',createdAt:new Date().toISOString(),idempotencyKey:`briefcase_${randomUUID()}`,invoiceIds:preview.invoiceIds,policyVersion:s.policyVersion,destination:process.env.STRIPE_PAYOUT_DESTINATION,evidence:`F01–F04: £${(preview.requiredPence/100).toFixed(2)} approved obligations requiring funding by ${s.settings.demoDate}, less £${(preview.bankAvailablePence/100).toFixed(2)} simulated payments-account balance and £${(preview.pendingPence/100).toFixed(2)} pending funding. Preserve £${(s.settings.stripeReservePence/100).toFixed(2)} in Stripe. Own approved GBP bank destination only. Supplier invoices remain unpaid.`};
   s.fundingAttempts.push(attempt); s.run.status='funding'; archiveRun(s); writeStore(s);
   try {
@@ -200,7 +233,7 @@ app.post('/api/reset',route(async(_req,res)=>withLock(async()=>{
   const old=readStore(); if(old.fundingAttempts.length) throw new Error('Reset is disabled after a funding attempt so the payout ledger cannot be lost.');
   const s=initialState(); await refreshIntegrations(s); writeStore(s); res.json(publicState(s));
 })));
-app.get('/api/audit',route(async(_req,res)=>{const s=readStore();res.json({policyVersion:s.policyVersion,runs:[...s.runHistory,...(s.run?[s.run]:[])],fundingAttempts:s.fundingAttempts});}));
+app.get('/api/audit',route(async(_req,res)=>{const s=readStore();res.json({policyVersion:s.policyVersion,runs:[...s.runHistory,...(s.run?[s.run]:[])],fundingAttempts:s.fundingAttempts,invoiceReviews:s.invoices.filter(i=>i.reviewHistory?.length).map(i=>({invoiceId:i.id,reviewState:i.reviewState,reviewHistory:i.reviewHistory}))});}));
 app.use(express.static(path.resolve('dist')));
 app.get('*',(_req,res)=> { const index=path.resolve('dist/index.html'); fs.existsSync(index)?res.sendFile(index):res.status(404).send('Start the Vite dashboard at http://127.0.0.1:5173'); });
 app.use((error:Error,_req:Request,res:Response,_next:NextFunction)=>{res.status(400).json({error:error.message || 'The request could not be completed.'});});

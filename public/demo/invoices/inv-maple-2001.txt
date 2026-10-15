@@ -1,0 +1,13 @@
+SIMULATED INVOICE — FOR DEMONSTRATION ONLY
+Supplier: Maple Furniture Hire
+Supplier ID: sup-maple
+Invoice number: MF-2001
+Issue date: 2026-10-08
+Due date: 2026-11-03
+Terms: Full payment due 2026-11-03; no early-payment discount.
+Subtotal: GBP 1400.00
+VAT: GBP 280.00
+Total: GBP 1680.00
+Currency: GBP
+Bank reference: SIM-BANK-MAPLE-CAL
+These references are fictional identifiers, not bank account details.

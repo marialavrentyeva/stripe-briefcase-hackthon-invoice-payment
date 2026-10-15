@@ -1,7 +1,7 @@
 import type { AppState } from '../shared/types';
 
 export function fundingPreview(state: AppState) {
-  const eligible = state.run?.decisions.filter(d => d.status === 'eligible' && state.run!.approvedInvoiceIds.includes(d.invoiceId) && d.fundingDate && d.fundingDate <= state.settings.demoDate) || [];
+  const eligible = state.run?.decisions.filter(d => d.status === 'eligible' && !state.invoices.find(i => i.id === d.invoiceId)?.reviewState && state.run!.approvedInvoiceIds.includes(d.invoiceId) && d.fundingDate && d.fundingDate <= state.settings.demoDate) || [];
   const requiredPence = eligible.reduce((sum, d) => sum + d.netPence, 0);
   const pendingPence = state.fundingAttempts.filter(a => a.status === 'pending' || a.status === 'unknown').reduce((sum,a) => sum + a.amountPence, 0);
   const bankAvailablePence = state.bankBalancePence;
@@ -29,6 +29,7 @@ export function exportRun(state: AppState) {
   for (const d of state.run.decisions) {
     if (d.status !== 'eligible' || !state.run.approvedInvoiceIds.includes(d.invoiceId)) continue;
     const invoice = state.invoices.find(i => i.id === d.invoiceId)!;
+    if (!invoice || invoice.reviewState) continue;
     rows.push([state.run.id,invoice.id,invoice.supplierName,invoice.number,'GBP',(d.grossPence/100).toFixed(2),(d.discountPence/100).toFixed(2),(d.netPence/100).toFixed(2),d.fundingDate,d.sendDate,d.arrivalDate,invoice.number,state.run.policyVersion,'APPROVED_NOT_PAID']);
   }
   return '\uFEFF' + rows.map(r=>r.map(csvCell).join(',')).join('\r\n');

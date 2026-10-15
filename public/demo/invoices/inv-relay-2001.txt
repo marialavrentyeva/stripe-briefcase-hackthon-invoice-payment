@@ -1,0 +1,13 @@
+SIMULATED INVOICE — FOR DEMONSTRATION ONLY
+Supplier: Relay Couriers
+Supplier ID: sup-relay
+Invoice number: RC-2001
+Issue date: 2026-10-08
+Due date: 2026-10-29
+Terms: Full payment due 2026-10-29; no early-payment discount.
+Subtotal: GBP 1300.00
+VAT: GBP 260.00
+Total: GBP 1560.00
+Currency: GBP
+Bank reference: SIM-BANK-RELAY-CAL
+These references are fictional identifiers, not bank account details.

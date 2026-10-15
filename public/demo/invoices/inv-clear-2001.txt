@@ -1,0 +1,13 @@
+SIMULATED INVOICE — FOR DEMONSTRATION ONLY
+Supplier: Clear Window Services
+Supplier ID: sup-clear
+Invoice number: CW-2001
+Issue date: 2026-10-08
+Due date: 2026-11-04
+Terms: Full payment due 2026-11-04; no early-payment discount.
+Subtotal: GBP 800.00
+VAT: GBP 160.00
+Total: GBP 960.00
+Currency: GBP
+Bank reference: SIM-BANK-CLEAR-CAL
+These references are fictional identifiers, not bank account details.

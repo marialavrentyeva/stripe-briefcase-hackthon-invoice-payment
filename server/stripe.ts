@@ -59,7 +59,23 @@ function usableBank(bank: Json, accountId: string) {
 async function verifyDestination(requested?: string) {
   const destination = destinationId(requested);
   const account = await ownAccount();
-  if (account.payouts_enabled !== true) throw new StripeIntegrationError('Payouts are not enabled on this Stripe account. Complete sandbox account setup in Stripe.');
+  if (account.payouts_enabled !== true) {
+    // A standalone sandbox can report production onboarding as incomplete after
+    // successfully paying out test funds. Only authenticated paid test history
+    // for this exact destination can attest that narrow sandbox exception.
+    // https://docs.stripe.com/api/payouts/list
+    if (account.payouts_enabled === false && account.external_accounts === undefined) {
+      const query = new URLSearchParams({ destination, status: 'paid', limit: '1' });
+      const history = await request(`/payouts?${query}`);
+      const previous = history.object === 'list' && Array.isArray(history.data) ? history.data[0] : undefined;
+      if (previous?.object === 'payout' && previous.type === 'bank_account' && previous.livemode === false && previous.status === 'paid'
+        && previous.currency === 'gbp' && previous.destination === destination && typeof previous.id === 'string' && /^po_[A-Za-z0-9]+$/.test(previous.id)
+        && Number.isSafeInteger(previous.amount) && previous.amount > 0 && !previous.failure_code && !previous.reversed_by) {
+        return { destination, bankVerified: false, paidTestHistory: true };
+      }
+    }
+    throw new StripeIntegrationError('Payouts are not enabled on this Stripe account. Complete sandbox account setup in Stripe, or verify a previously paid test GBP payout to the configured bank.');
+  }
   // Stripe omits external_accounts on standalone accounts where this key is not a
   // Connect controller. The account-scoped Payouts API validates an explicit bank ID
   // on submission; never substitute a default destination or use a Connect header.
@@ -93,8 +109,8 @@ export async function getStripeStatus(): Promise<{ status: IntegrationStatus; ba
   let balancePence = 0;
   try {
     balancePence = (await readTestBalance()).balancePence;
-    const { destination, bankVerified } = await verifyDestination();
-    const message = bankVerified ? 'Stripe sandbox connected; own GBP bank destination verified. No real money moves.' : 'Stripe test balance connected; the configured bank is validated by Stripe when the payout is submitted. No real money moves.';
+    const { destination, bankVerified, paidTestHistory } = await verifyDestination();
+    const message = paidTestHistory ? 'Stripe sandbox connected; a previously paid test GBP payout verifies the configured bank despite incomplete account onboarding. Stripe validates each new payout. No real money moves.' : bankVerified ? 'Stripe sandbox connected; own GBP bank destination verified. No real money moves.' : 'Stripe test balance connected; the configured bank is validated by Stripe when the payout is submitted. No real money moves.';
     return { status: { configured: true, connected: true, mode: 'test', message }, balancePence, destination };
   } catch (error) {
     return { status: { configured, connected: false, mode: 'test', message: error instanceof StripeIntegrationError ? error.message : 'Stripe configuration could not be verified.' }, balancePence };
